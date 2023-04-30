@@ -10,6 +10,7 @@ import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
 import com.hb.auth.security.service.TokenService;
+import com.hb.auth.util.NumberUtils;
 import com.hb.auth.view.UserViewImp;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +49,9 @@ public class AuthService {
 
         if (userRole.isEmpty()) throw new IllegalStateException("Role USER doesn't exist");
 
-        String username = generateUsername(firstName, lastName);
+        String username = generateUsername(firstName, lastName, NumberUtils::Generate4DigitsNumber);
 
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByUsernameOrEmail(username, email);
 
         if (user.isPresent()) throw new ResourceAlreadyExistsException("User already exist");
 

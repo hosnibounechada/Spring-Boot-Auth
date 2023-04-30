@@ -12,6 +12,7 @@ import com.hb.auth.payload.response.PageResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.PostRepository;
 import com.hb.auth.repository.UserRepository;
+import com.hb.auth.util.NumberUtils;
 import com.hb.auth.util.StringUtils;
 import com.hb.auth.util.UpdateObject;
 import com.hb.auth.view.PostView;
@@ -75,7 +76,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
 
         User user = userMapper.requestToEntity(request);
 
-        user.setUsername(generateUsername(request.getFirstName(), request.getLastName()));
+        user.setUsername(generateUsername(request.getFirstName(), request.getLastName(), NumberUtils::Generate4DigitsNumber));
 
         return userMapper.entityToResponse(userRepository.save(user));
     }

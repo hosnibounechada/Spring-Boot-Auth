@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 
+import java.util.function.Supplier;
+
 
 public class StringUtils {
     /**
@@ -89,10 +91,10 @@ public class StringUtils {
     }
 
     /**
-     * Generate random username by concatenation of firstName and lastName
+     * Generate random username by concatenation of firstName and lastName plus 4 or 6 digits number supplier function
      * @return String
      */
-    public static String generateUsername(String firstName, String lastName){
-        return firstName+"_"+lastName;
+    public static String generateUsername(String firstName, String lastName, Supplier<Integer> supplier){
+        return firstName+"_"+lastName+"_"+supplier.get();
     }
 }

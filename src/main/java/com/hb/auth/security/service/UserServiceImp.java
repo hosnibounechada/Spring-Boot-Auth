@@ -15,10 +15,7 @@ public class UserServiceImp implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        System.out.println("In the user details service");
-
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user is not valid"));
+        return userRepository.findByUsernameOrEmail(username,username).orElseThrow(() -> new UsernameNotFoundException("user is not valid"));
     }
 
 }
