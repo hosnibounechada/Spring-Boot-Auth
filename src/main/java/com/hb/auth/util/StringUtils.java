@@ -7,12 +7,19 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 
 
 public class StringUtils {
+    /**
+     * Convert camelCase to snake_case
+     * @return String
+     */
     public static String toSnakeCase(String input) {
         String regex = "([a-z])([A-Z]+)";
         String replacement = "$1_$2";
         return input.replaceAll(regex, replacement).toLowerCase();
     }
-
+    /**
+     * Convert camelCase to snake_case
+     * @return Object
+     */
     public static JsonNode objectFromCamelCaseToSnakeCase(Object obj) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -29,9 +36,18 @@ public class StringUtils {
         }
 
     }
+    /**
+     * Uppercase first letter of given String
+     * @return String
+     */
     public static String upperCaseFirstLetter(String text) {
         return text == null || text.isEmpty() ? text : text.substring(0, 1).toUpperCase() + text.substring(1);
     }
+
+    /**
+     * Convert snake_case to camelCase
+     * @return String
+     */
     public static String toCamelCase(String snakeCase) {
         StringBuilder camelCase = new StringBuilder();
         boolean capitalizeNext = false;
@@ -48,17 +64,35 @@ public class StringUtils {
         }
         return camelCase.toString();
     }
+
+    /**
+     * camelCase request parameters and request body
+     * @return String[]
+     */
     public static String[] toCamelCase(String[] values) {
         for(int i = 0; i < values.length; i++){
             values[i] = toCamelCase(values[i]);
         }
         return values;
     }
+
+    /**
+     * Lowercase user inputs (Body)
+     * @return String[]
+     */
     public static String[] toLowerCase(String[] values){
         String[] convertedValues = new String[values.length];
         for (int i = 0; i < values.length; i++) {
             convertedValues[i] = values[i].toLowerCase();
         }
         return convertedValues;
+    }
+
+    /**
+     * Generate random username by concatenation of firstName and lastName
+     * @return String
+     */
+    public static String generateUsername(String firstName, String lastName){
+        return firstName+"_"+lastName;
     }
 }

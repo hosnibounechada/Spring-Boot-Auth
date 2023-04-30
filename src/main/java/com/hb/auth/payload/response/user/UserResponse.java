@@ -7,9 +7,12 @@ import static com.hb.auth.util.StringUtils.*;
 public record UserResponse(Long id,
                            @JsonProperty("first_name")
                            String firstName,
-                           @JsonProperty("last_name") String lastName,
-                           @JsonProperty("full_name") String fullName,
+                           @JsonProperty("last_name")
+                           String lastName,
+                           @JsonProperty("full_name")
+                           String fullName,
                            Integer age,
+                           String username,
                            String email) {
     @Override
     public String firstName() {

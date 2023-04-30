@@ -12,6 +12,7 @@ import com.hb.auth.payload.response.PageResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.PostRepository;
 import com.hb.auth.repository.UserRepository;
+import com.hb.auth.util.StringUtils;
 import com.hb.auth.util.UpdateObject;
 import com.hb.auth.view.PostView;
 import com.hb.auth.view.UserViewImp;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.hb.auth.util.PaginationUtils.generatePageableResponse;
+import static com.hb.auth.util.StringUtils.generateUsername;
 
 
 @Service
@@ -35,6 +38,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public PageResponse<UserResponse> getAll() {
@@ -67,8 +71,11 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
     @Override
     public UserResponse create(CreateUserRequest request) {
         /*validate(request);*/
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
 
         User user = userMapper.requestToEntity(request);
+
+        user.setUsername(generateUsername(request.getFirstName(), request.getLastName()));
 
         return userMapper.entityToResponse(userRepository.save(user));
     }

@@ -22,15 +22,18 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static com.hb.auth.util.StringUtils.toCamelCase;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("${apiPrefix}/users")
 @Tag(name = "user", description = "the user API")
 @Validated
+@EnableMethodSecurity
 public class UserController {
     private final UserService userService;
 
@@ -83,6 +86,7 @@ public class UserController {
             @ApiResponse(description = "failed operation (Bad Request)", responseCode = "400", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))}),
     })
     @PostMapping(consumes = {"application/json"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }

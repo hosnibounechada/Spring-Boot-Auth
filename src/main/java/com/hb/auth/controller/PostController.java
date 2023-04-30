@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/posts")
+@RequestMapping("${apiPrefix}/posts")
 @Tag(name = "post", description = "the post API")
 public class PostController implements IController<Long, CreatePostRequest, UpdatePostRequest, PostResponse> {
 
