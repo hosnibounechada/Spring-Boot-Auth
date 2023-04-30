@@ -5,12 +5,12 @@ import com.hb.auth.error.ErrorModel;
 import com.hb.auth.error.ErrorResponse;
 import com.hb.auth.exception.*;
 import com.hb.auth.payload.response.BadRequestErrorResponse;
-import com.hb.auth.util.StringUtils;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,14 +20,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.hb.auth.util.StringUtils.*;
+
 @RestControllerAdvice
 @Hidden
 public class GlobalExceptionHandler {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleException(HttpMessageNotReadableException e) {
+        return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleException(InvalidCredentialsException e) {
+        return new ErrorResponse(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e) {
@@ -61,17 +73,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BadRequestErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
         List<ErrorModel> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(err -> new ErrorModel(StringUtils.toSnakeCase(err.getField()), Objects.requireNonNull(err.getRejectedValue()).toString(), Objects.requireNonNull(err.getDefaultMessage())))
+                .map(err -> new ErrorModel(toSnakeCase(err.getField()), err.getRejectedValue() == null ? "" : err.getRejectedValue().toString(), err.getDefaultMessage()))
                 .collect(Collectors.toList());
 
         return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
     }
     @ExceptionHandler(PropertyReferenceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public BadRequestErrorResponse handleMethodArgumentNotValidException(PropertyReferenceException e) {
+    public BadRequestErrorResponse handlePropertyReferenceException(PropertyReferenceException e) {
         ErrorModel errorModel = new ErrorModel(e.getPropertyName(),e.getPropertyName(),e.getMessage());
         List<ErrorModel> errors = new ArrayList<>();
         errors.add(errorModel);
@@ -86,7 +99,7 @@ public class GlobalExceptionHandler {
         violations.forEach(violation -> {
             String errorMessage = violation.getMessage();
             String invalidValue = violation.getInvalidValue().toString();
-            String parameterName = StringUtils.toSnakeCase(violation.getPropertyPath().toString().substring(violation.getPropertyPath().toString().indexOf(".") + 1));
+            String parameterName = toSnakeCase(violation.getPropertyPath().toString().substring(violation.getPropertyPath().toString().indexOf(".") + 1));
             errors.add(new ErrorModel(parameterName, invalidValue, errorMessage));
         });
        return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
