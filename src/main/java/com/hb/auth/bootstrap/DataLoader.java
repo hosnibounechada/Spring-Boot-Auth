@@ -19,8 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.hb.auth.util.StringUtils.generateUsername;
-
 @Component
 @RequiredArgsConstructor
 @Profile({"dev", "local"})
@@ -37,6 +35,9 @@ public class DataLoader implements CommandLineRunner {
         loadPosts();
     }
 
+    /**
+     * Seed Roles in the startup
+     */
     public void loadRoles() {
         if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
         Role adminRole = roleRepository.save(new Role("ADMIN"));
@@ -49,7 +50,9 @@ public class DataLoader implements CommandLineRunner {
 
         userRepository.save(admin);
     }
-
+    /**
+     * Seed Users in the startup
+     */
     public void loadUsers() {
 
         Role userRole = roleRepository.findByAuthority("USER").orElseThrow(() -> new NotFoundException("Role Not Found!"));
@@ -65,7 +68,9 @@ public class DataLoader implements CommandLineRunner {
         );
         postRepository.saveAll(posts);
     }
-
+    /**
+     * Seed Posts in the startup
+     */
     public void loadPosts() {
         User hosni = userRepository.findById(2L).orElseThrow(() -> new NotFoundException("User Not Found!"));
         Post post = new Post(3L, "Second Hosni Post", hosni);
