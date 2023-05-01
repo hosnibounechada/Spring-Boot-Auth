@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.net.ConnectException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,5 +160,11 @@ public class GlobalExceptionHandler {
                         .body(new ErrorResponse("Unknown Error, please contact our support team ", HttpStatus.INTERNAL_SERVER_ERROR));
             }
         }
+    }
+
+    @ExceptionHandler(ConnectException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponse handleConnectException(ConnectException e){
+        return new ErrorResponse(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 }
