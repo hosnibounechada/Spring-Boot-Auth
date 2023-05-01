@@ -1,10 +1,15 @@
 package com.hb.auth.service;
 
+import com.hb.auth.common.service.MailService;
+import com.hb.auth.common.service.RedisService;
+import com.hb.auth.common.template.MailTemplate;
 import com.hb.auth.exception.InvalidCredentialsException;
+import com.hb.auth.exception.NotFoundException;
 import com.hb.auth.exception.ResourceAlreadyExistsException;
 import com.hb.auth.mapper.UserMapper;
 import com.hb.auth.model.Role;
 import com.hb.auth.model.User;
+import com.hb.auth.payload.request.auth.ConfirmEmailRequest;
 import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.RoleRepository;
@@ -21,12 +26,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
+import static com.hb.auth.util.NumberUtils.*;
 import static com.hb.auth.util.StringUtils.*;
 
 
@@ -40,6 +48,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final MailService mailService;
+    private final RedisService redisService;
 
     public UserResponse registerUser(String firstName, String lastName, int age, String email, String password) {
 
@@ -61,6 +71,12 @@ public class AuthService {
 
         User savedUser = userRepository.save(new User(firstName, lastName, age, username, email, encodedPassword, authorities));
 
+        String confirmationCode = Generate6DigitsNumber().toString();
+
+        redisService.setValueEx(email, confirmationCode, Duration.ofSeconds(120));
+
+        mailService.sendMail(MailTemplate.accountConfirmationMail(email, confirmationCode));
+
         return userMapper.entityToResponse(savedUser);
     }
 
@@ -75,7 +91,7 @@ public class AuthService {
             User user = (User) auth.getPrincipal();
             UserViewImp userViewImp = new UserViewImp(user.getId(), user.getFirstName(), user.getLastName(), user.getAge(), user.getUsername(), user.getEmail());
 
-            assignJwtToCookie(jwt,response);
+            assignJwtToCookie(jwt, response);
 
             return new LoginResponse(userViewImp, jwt);
 
@@ -84,4 +100,12 @@ public class AuthService {
         }
     }
 
+    public String confirmEmail(String email, String code) {
+        if (!redisService.getValueEx(email).equals(code))
+            throw new NotFoundException("Doesn't exist or already expired");
+
+        // validate in the database
+
+        return "Succeeded";
+    }
 }
