@@ -1,6 +1,7 @@
 package com.hb.auth.controller;
 
 import com.hb.auth.payload.request.auth.ConfirmEmailRequest;
+import com.hb.auth.payload.request.auth.ConfirmPhoneRequest;
 import com.hb.auth.payload.request.auth.RegisterRequest;
 import com.hb.auth.payload.request.user.LoginRequest;
 import com.hb.auth.payload.response.auth.LoginResponse;
@@ -42,8 +43,13 @@ public class AuthController {
         return ResponseEntity.ok(loginResponse);
     }
 
-    @PostMapping("/confirmation")
-    public ResponseEntity<String> confirmEmail(@Valid @RequestBody ConfirmEmailRequest body) {
+    @PostMapping("/emailConfirmation")
+    public ResponseEntity<Boolean> confirmEmail(@Valid @RequestBody ConfirmEmailRequest body) {
         return ResponseEntity.ok(authService.confirmEmail(body.email(), body.code()));
+    }
+
+    @PostMapping("/phoneConfirmation")
+    public ResponseEntity<String> confirmPhone(@Valid @RequestBody ConfirmPhoneRequest body) {
+        return ResponseEntity.ok(authService.confirmPhone(body.phone(), body.otp()));
     }
 }

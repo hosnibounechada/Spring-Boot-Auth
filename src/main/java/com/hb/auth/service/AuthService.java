@@ -1,5 +1,6 @@
 package com.hb.auth.service;
 
+import com.hb.auth.common.UserEmailRedis;
 import com.hb.auth.common.service.MailService;
 import com.hb.auth.common.service.RedisService;
 import com.hb.auth.common.template.MailTemplate;
@@ -15,6 +16,7 @@ import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
 import com.hb.auth.security.service.TokenService;
+import com.hb.auth.util.JsonSerializer;
 import com.hb.auth.util.NumberUtils;
 import com.hb.auth.view.UserViewImp;
 import jakarta.servlet.http.HttpServletResponse;
@@ -73,9 +75,10 @@ public class AuthService {
 
         String confirmationCode = Generate6DigitsNumber().toString();
 
-        redisService.setValueEx(email, confirmationCode, Duration.ofSeconds(120));
+//        redisService.setValueEx(email, confirmationCode, Duration.ofSeconds(120));
+        redisService.setHashValueEx(email, confirmationCode);
 
-        mailService.sendMail(MailTemplate.accountConfirmationMail(email, confirmationCode));
+        //mailService.sendMail(MailTemplate.accountConfirmationMail(email, confirmationCode));
 
         return userMapper.entityToResponse(savedUser);
     }
@@ -89,6 +92,7 @@ public class AuthService {
             String jwt = tokenService.generateJwt(auth);
 
             User user = (User) auth.getPrincipal();
+
             UserViewImp userViewImp = new UserViewImp(user.getId(), user.getFirstName(), user.getLastName(), user.getAge(), user.getUsername(), user.getEmail());
 
             assignJwtToCookie(jwt, response);
@@ -100,9 +104,26 @@ public class AuthService {
         }
     }
 
-    public String confirmEmail(String email, String code) {
-        if (!redisService.getValueEx(email).equals(code))
-            throw new NotFoundException("Doesn't exist or already expired");
+    public Boolean confirmEmail(String email, String code) {
+        int counter =Integer.parseInt(redisService.getHashValueEx(email, "counter"));
+
+        if(counter > 2) throw new NotFoundException("Too Many Attempts");
+
+        redisService.increment(email, "counter", 1L);
+
+        String storedCode = redisService.getHashValueEx(email, "code");
+
+        if(!storedCode.equals(code)) throw new NotFoundException("Incorrect code");
+
+        // validate in the database*/
+
+        return true;
+    }
+
+    public String confirmPhone(String email, String otp) {
+/*        var test = redisService.getHashValueEx(email);
+        if (!redisService.getHashValueEx(email).equals(otp))
+            throw new NotFoundException("Doesn't exist or already expired");*/
 
         // validate in the database
 
