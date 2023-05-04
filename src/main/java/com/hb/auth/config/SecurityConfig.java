@@ -56,13 +56,21 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.ignoringRequestMatchers(
                         AntPathRequestMatcher.antMatcher("/h2-console/**"),
-                        AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"))
+                        AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
+                        AntPathRequestMatcher.antMatcher("/api-docs/**"),
+                        AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"),
+                        AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**"),
+                        AntPathRequestMatcher.antMatcher(API_PREFIX + "/posts/**"))
                 )
                 .headers(headers -> headers.frameOptions().disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 AntPathRequestMatcher.antMatcher("/h2-console/**"),
-                                AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**")
+                                AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
+                                AntPathRequestMatcher.antMatcher("/api-docs/**"),
+                                AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"),
+                                AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**"),
+                                AntPathRequestMatcher.antMatcher(API_PREFIX + "/posts/**")
                         ).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/admin/**")).hasRole("ADMIN")
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/user/**")).hasAnyRole("ADMIN", "USER")
