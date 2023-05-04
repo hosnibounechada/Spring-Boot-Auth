@@ -12,7 +12,8 @@ import java.util.Set;
 @Table(
         name = "users",
         uniqueConstraints = {
-                @UniqueConstraint(name = "user_email_unique", columnNames = "email")
+                @UniqueConstraint(name = "user_email_unique", columnNames = "email"),
+                @UniqueConstraint(name = "user_phone_unique", columnNames = "phone")
         }
 )
 @NoArgsConstructor
@@ -67,6 +68,12 @@ public class User implements UserDetails {
             length = 128
     )
     private String email;
+    @Column(
+            name = "phone",
+            nullable = true,
+            length = 15
+    )
+    private String phone;
 
     @Column(
             name = "password",
