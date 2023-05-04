@@ -5,8 +5,10 @@ import com.hb.auth.payload.request.BaseRequestDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @Setter
 public class UpdateUserRequest extends BaseRequestDTO {
