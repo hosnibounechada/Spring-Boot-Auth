@@ -5,6 +5,7 @@ import com.hb.auth.error.ErrorModel;
 import com.hb.auth.error.ErrorResponse;
 import com.hb.auth.exception.*;
 import com.hb.auth.payload.response.BadRequestErrorResponse;
+import com.twilio.exception.ApiException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -166,5 +167,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse handleConnectException(ConnectException e){
         return new ErrorResponse(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(ApiException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConnectException(ApiException e){
+        return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

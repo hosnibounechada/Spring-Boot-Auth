@@ -3,7 +3,9 @@ package com.hb.auth.service;
 import com.hb.auth.common.UserEmailRedis;
 import com.hb.auth.common.service.MailService;
 import com.hb.auth.common.service.RedisService;
+import com.hb.auth.common.service.TwilioService;
 import com.hb.auth.common.template.MailTemplate;
+import com.hb.auth.constant.RedisEmailConfirmationHash;
 import com.hb.auth.exception.InvalidCredentialsException;
 import com.hb.auth.exception.NotFoundException;
 import com.hb.auth.exception.ResourceAlreadyExistsException;
@@ -31,10 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import static com.hb.auth.constant.RedisEmailConfirmationHash.*;
 import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
 import static com.hb.auth.util.NumberUtils.*;
 import static com.hb.auth.util.StringUtils.*;
@@ -52,6 +53,7 @@ public class AuthService {
     private final TokenService tokenService;
     private final MailService mailService;
     private final RedisService redisService;
+    private final TwilioService twilioService;
 
     public UserResponse registerUser(String firstName, String lastName, int age, String email, String password) {
 
@@ -75,10 +77,13 @@ public class AuthService {
 
         String confirmationCode = Generate6DigitsNumber().toString();
 
-//        redisService.setValueEx(email, confirmationCode, Duration.ofSeconds(120));
-        redisService.setHashValueEx(email, confirmationCode);
+        Map<String, String> map = Map.of(CODE,"123456",COUNTER,"0");
 
-        //mailService.sendMail(MailTemplate.accountConfirmationMail(email, confirmationCode));
+        /*redisService.setHashByKeyAndHashMap(email, map);
+        redisService.setTTL(email, 350L);*/
+        redisService.createHashWithTtl(email,map,350L);
+
+        //mailService.sendMailAsync(MailTemplate.accountConfirmationMail(email, confirmationCode));
 
         return userMapper.entityToResponse(savedUser);
     }
@@ -105,28 +110,36 @@ public class AuthService {
     }
 
     public Boolean confirmEmail(String email, String code) {
-        int counter =Integer.parseInt(redisService.getHashValueEx(email, "counter"));
 
-        if(counter > 2) throw new NotFoundException("Too Many Attempts");
+        Map<String, String> map = redisService.getFieldValuesAndIncrement(email);
 
-        redisService.increment(email, "counter", 1L);
+        if(map == null) throw new NotFoundException("Invalid code or Already expired");
 
-        String storedCode = redisService.getHashValueEx(email, "code");
-
-        if(!storedCode.equals(code)) throw new NotFoundException("Incorrect code");
+        if(!map.get(CODE).equals(code)) throw new NotFoundException("Incorrect code");
 
         // validate in the database*/
 
         return true;
     }
 
-    public String confirmPhone(String email, String otp) {
-/*        var test = redisService.getHashValueEx(email);
-        if (!redisService.getHashValueEx(email).equals(otp))
-            throw new NotFoundException("Doesn't exist or already expired");*/
+    public Boolean sendOTP(String phone) {
+        return twilioService.sendOTP(phone);
+    }
 
-        // validate in the database
+    public Boolean verifyOTP(String phone, String otp) {
+        boolean result =  twilioService.verifyOTP(phone, otp);
+        if(!result) throw new NotFoundException("Operation doesn't Complete");
 
-        return "Succeeded";
+        /*Optional<User> user = userRepository.findById(id);
+
+        if(user.isEmpty()) throw new NotFoundException("User not found");
+
+        User updatedUser = user.get();
+
+        updatedUser.setPhone(phone);
+
+        return userRepository.save(updatedUser);*/
+
+        return true;
     }
 }
