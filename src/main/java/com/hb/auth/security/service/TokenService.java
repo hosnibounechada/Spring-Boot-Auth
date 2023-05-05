@@ -34,14 +34,16 @@ public class TokenService {
         User user = (User) auth.getPrincipal();
 
         Consumer<Map<String, Object>> userMap = stringObjectMap -> {
-            stringObjectMap.put("id",user.getId());
-            stringObjectMap.put("username",user.getUsername());
+            stringObjectMap.put("i",user.getId());
+            stringObjectMap.put("u",user.getUsername());
+            stringObjectMap.put("e",user.getEmail());
         };
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .subject(auth.getName())
+//                .subject(auth.getName())
+                .subject(user.getId().toString())
                 .claim("roles", scope)
                 .claims(userMap)
                 .expiresAt(Instant.now().plus(Duration.of(2, ChronoUnit.MINUTES)))
