@@ -172,16 +172,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleApiException(ApiException e){
-        return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public BadRequestErrorResponse handleApiException(ApiException e){
+        return new BadRequestErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString());
     }
 
     @ExceptionHandler(FileSizeLimitExceededException.class)
-    public ErrorResponse handleFileSizeLimitExceededException(FileSizeLimitExceededException e) {
-        return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public BadRequestErrorResponse handleFileSizeLimitExceededException(FileSizeLimitExceededException e) {
+        return new BadRequestErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString());
     }
     @ExceptionHandler({FileSizeLimitException.class, FileTypeException.class})
-    public ErrorResponse handleFileSizeLimitAndFileTypeExceptions(FileSizeLimitException e) {
-        return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public BadRequestErrorResponse handleFileSizeLimitAndFileTypeExceptions(FileSizeLimitException e) {
+        return new BadRequestErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString());
+
+
     }
 }
