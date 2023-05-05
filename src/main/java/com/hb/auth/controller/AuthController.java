@@ -1,6 +1,5 @@
 package com.hb.auth.controller;
 
-import com.hb.auth.model.User;
 import com.hb.auth.payload.request.auth.*;
 import com.hb.auth.payload.request.user.LoginRequest;
 import com.hb.auth.payload.response.auth.LoginResponse;
@@ -13,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
 
@@ -33,7 +34,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest body, HttpServletResponse response) {
         LoginResponse loginResponse = authService.loginUser(body.username(), body.password(), response);
 
-        if (loginResponse.userViewImp() != null) {
+        if (loginResponse.userResponse() != null) {
             assignJwtToCookie(loginResponse.jwt(), response);
         }
 
@@ -51,7 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/verifyOTP")
-    public ResponseEntity<Boolean> verifyOTP(@Valid @RequestBody VerifyPhoneRequest body) {
-        return ResponseEntity.ok(authService.verifyOTP(body.phone(), body.otp()));
+    public ResponseEntity<Boolean> verifyOTP(@Valid @RequestBody VerifyPhoneRequest body, Principal principal) {
+        return ResponseEntity.ok(authService.verifyOTP(Long.parseLong(principal.getName()) ,body.phone(), body.otp()));
     }
 }

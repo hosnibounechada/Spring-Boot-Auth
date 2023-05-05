@@ -1,6 +1,7 @@
 package com.hb.auth.service;
 
 import com.hb.auth.annotation.CustomAnnotation;
+import com.hb.auth.common.service.MinioService;
 import com.hb.auth.exception.ConflictException;
 import com.hb.auth.exception.GoneException;
 import com.hb.auth.exception.NotFoundException;
@@ -16,14 +17,18 @@ import com.hb.auth.util.NumberUtils;
 import com.hb.auth.util.StringUtils;
 import com.hb.auth.util.UpdateObject;
 import com.hb.auth.view.PostView;
+import com.hb.auth.view.UserView;
 import com.hb.auth.view.UserViewImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +45,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
     private final PostRepository postRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final MinioService minioService;
 
     @Override
     public PageResponse<UserResponse> getAll() {
@@ -111,6 +117,19 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
         int count = userRepository.deleteUserById(id);
 
         if (count != 1) throw new GoneException("User already deleted!");
+    }
+
+    public UserResponse updateProfilePicture(Long id, String objectName, MultipartFile file){
+        String url =  minioService.uploadFile(objectName, file);
+
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User could not be found"));
+
+        user.setProfileThumbnail(url);
+        user.setProfilePicture(url);
+
+        userRepository.save(user);
+
+        return userMapper.entityToResponse(user);
     }
 
     public PageResponse<UserViewImp> search(

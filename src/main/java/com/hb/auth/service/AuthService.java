@@ -1,26 +1,21 @@
 package com.hb.auth.service;
 
-import com.hb.auth.common.UserEmailRedis;
 import com.hb.auth.common.service.MailService;
 import com.hb.auth.common.service.RedisService;
 import com.hb.auth.common.service.TwilioService;
 import com.hb.auth.common.template.MailTemplate;
-import com.hb.auth.constant.RedisEmailConfirmationHash;
 import com.hb.auth.exception.InvalidCredentialsException;
 import com.hb.auth.exception.NotFoundException;
 import com.hb.auth.exception.ResourceAlreadyExistsException;
 import com.hb.auth.mapper.UserMapper;
 import com.hb.auth.model.Role;
 import com.hb.auth.model.User;
-import com.hb.auth.payload.request.auth.ConfirmEmailRequest;
 import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
 import com.hb.auth.security.service.TokenService;
-import com.hb.auth.util.JsonSerializer;
 import com.hb.auth.util.NumberUtils;
-import com.hb.auth.view.UserViewImp;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,9 +25,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.Duration;
 import java.util.*;
 
 import static com.hb.auth.constant.RedisEmailConfirmationHash.*;
@@ -77,13 +70,11 @@ public class AuthService {
 
         String confirmationCode = Generate6DigitsNumber().toString();
 
-        Map<String, String> map = Map.of(CODE,"123456",COUNTER,"0");
+        Map<String, String> map = Map.of(CODE,confirmationCode,COUNTER,"0");
 
-        /*redisService.setHashByKeyAndHashMap(email, map);
-        redisService.setTTL(email, 350L);*/
         redisService.createHashWithTtl(email,map,350L);
 
-        //mailService.sendMailAsync(MailTemplate.accountConfirmationMail(email, confirmationCode));
+        mailService.sendMailAsync(MailTemplate.accountConfirmationMail(email, confirmationCode));
 
         return userMapper.entityToResponse(savedUser);
     }
@@ -98,11 +89,12 @@ public class AuthService {
 
             User user = (User) auth.getPrincipal();
 
-            UserViewImp userViewImp = new UserViewImp(user.getId(), user.getFirstName(), user.getLastName(), user.getAge(), user.getUsername(), user.getEmail());
+            UserResponse userResponse = userMapper.entityToResponse(user);
 
             assignJwtToCookie(jwt, response);
 
-            return new LoginResponse(userViewImp, jwt);
+
+            return new LoginResponse(userResponse, jwt);
 
         } catch (AuthenticationException e) {
             throw new InvalidCredentialsException("Invalid Credentials, Username or Password is wrong");
@@ -126,11 +118,12 @@ public class AuthService {
         return twilioService.sendOTP(phone);
     }
 
-    public Boolean verifyOTP(String phone, String otp) {
+    public Boolean verifyOTP(Long id, String phone, String otp) {
         boolean result =  twilioService.verifyOTP(phone, otp);
+
         if(!result) throw new NotFoundException("Operation doesn't Complete");
 
-        /*Optional<User> user = userRepository.findById(id);
+        Optional<User> user = userRepository.findById(id);
 
         if(user.isEmpty()) throw new NotFoundException("User not found");
 
@@ -138,7 +131,7 @@ public class AuthService {
 
         updatedUser.setPhone(phone);
 
-        return userRepository.save(updatedUser);*/
+        userRepository.save(updatedUser);
 
         return true;
     }

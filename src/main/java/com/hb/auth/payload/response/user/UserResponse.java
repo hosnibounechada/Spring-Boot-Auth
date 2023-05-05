@@ -13,7 +13,11 @@ public record UserResponse(Long id,
                            String fullName,
                            Integer age,
                            String username,
-                           String email) {
+                           String email,
+                           @JsonProperty("profile_picture")
+                           String profilePicture,
+                           @JsonProperty("profile_thumbnail")
+                           String profileThumbnail) {
     @Override
     public String firstName() {
         return upperCaseFirstLetter(firstName);
@@ -27,5 +31,13 @@ public record UserResponse(Long id,
     @Override
     public String fullName() {
         return firstName()+" "+lastName();
+    }
+
+    public String profilePicture() {
+        return profilePicture != null ? profilePicture : "default_profile_picture_url";
+    }
+
+    public String profileThumbnail() {
+        return profileThumbnail != null ? profileThumbnail : "default_profile_thumbnail_url";
     }
 }

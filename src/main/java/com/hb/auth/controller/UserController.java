@@ -26,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.hb.auth.util.StringUtils.toCamelCase;
 
@@ -138,5 +139,11 @@ public class UserController {
             @RequestParam(value = "sort_by", defaultValue = "id") String[] sortBy,
             @RequestParam(value = "direction", defaultValue = "asc") String direction) {
         return ResponseEntity.ok(userService.getUserPosts(id, page, size, toCamelCase(sortBy), direction));
+    }
+
+    @GetMapping("/upload")
+    public ResponseEntity<UserResponse> uploadFileFromClient(@RequestParam("file") MultipartFile file) {
+        UserResponse user = userService.updateProfilePicture(1L, file.getOriginalFilename() ,file);
+        return ResponseEntity.ok(user);
     }
 }
