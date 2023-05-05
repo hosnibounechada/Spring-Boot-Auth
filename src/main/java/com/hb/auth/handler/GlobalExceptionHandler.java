@@ -8,6 +8,7 @@ import com.hb.auth.payload.response.BadRequestErrorResponse;
 import com.twilio.exception.ApiException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -171,7 +172,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleConnectException(ApiException e){
+    public ErrorResponse handleApiException(ApiException e){
+        return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ErrorResponse handleFileSizeLimitExceededException(FileSizeLimitExceededException e) {
+        return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler({FileSizeLimitException.class, FileTypeException.class})
+    public ErrorResponse handleFileSizeLimitAndFileTypeExceptions(FileSizeLimitException e) {
         return new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
