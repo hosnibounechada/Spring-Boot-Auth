@@ -1,21 +1,14 @@
 package com.hb.auth.controller;
 
-import com.hb.auth.error.ErrorResponse;
+import com.hb.auth.annotation.swagger.user.*;
 import com.hb.auth.payload.request.user.CreateUserRequest;
 import com.hb.auth.payload.request.user.UpdateUserRequest;
-import com.hb.auth.payload.response.BadRequestErrorResponse;
 import com.hb.auth.payload.response.PageResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.service.UserService;
 import com.hb.auth.view.PostView;
 import com.hb.auth.view.UserViewImp;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
@@ -32,7 +25,7 @@ import static com.hb.auth.util.StringUtils.toCamelCase;
 
 @RestController
 @RequestMapping("${apiPrefix}/users")
-@Tag(name = "user", description = "the user API")
+@UserControllerSwagger
 @Validated
 @EnableMethodSecurity
 public class UserController {
@@ -53,6 +46,7 @@ public class UserController {
         StringLowerCaseEditor lowerCaseEditor = new StringLowerCaseEditor();
         dataBinder.registerCustomEditor( String.class, lowerCaseEditor );
     }*/
+    @GetAllUsersSwagger
     @GetMapping("/all")
     public ResponseEntity<PageResponse<UserResponse>> getAll() {
         PageResponse<UserResponse> pageResponse = userService.getAll();
@@ -60,6 +54,7 @@ public class UserController {
         return ResponseEntity.ok(pageResponse);
     }
 
+    @GetUsersByPagesSwagger
     @GetMapping
     public ResponseEntity<PageResponse<UserResponse>> getByPages(@RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "10") int size,
@@ -68,8 +63,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getByPages(page, size, sortBy, direction));
     }
 
-    @ApiResponse(description = "successful operation", responseCode = "200", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))})
-    @ApiResponse(description = "failed operation", responseCode = "404", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    @GetUserByIdSwagger
     @GetMapping("/{id:\\d+}")
     public ResponseEntity<UserResponse> getById(
             @Parameter(name = "id", example = "1")
@@ -81,23 +75,14 @@ public class UserController {
         return ResponseEntity.ok(userService.getById(id));
     }
 
-    @Operation(summary = "Create user", description = "This can only be done by the logged in user.", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(description = "successful operation", responseCode = "201", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))}),
-            @ApiResponse(description = "failed operation (Bad Request)", responseCode = "400", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))}),
-    })
+    @CreateUserSwagger
     @PostMapping(consumes = {"application/json"})
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
-    @Operation(summary = "Update user fields Except for ID, EMAIL and PASSWORD", description = "This can only be done by the logged in user.", tags = {"user"})
-    @ApiResponses(value = {
-            @ApiResponse(description = "successful operation", responseCode = "200", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))}),
-            @ApiResponse(description = "failed operation (Bad Request)", responseCode = "400", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))}),
-            @ApiResponse(description = "failed operation (User Not Found)", responseCode = "404", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
-    })
+    @UpdateUserSwagger
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<UserResponse> update(
             @PathVariable Long id,
@@ -105,6 +90,7 @@ public class UserController {
         return ResponseEntity.ok(userService.update(id, request));
     }
 
+    @DeleteUserSwagger
     @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 //        userService.delete(id);
@@ -119,6 +105,7 @@ public class UserController {
     // 3- Use Filter
     // Interceptor and Aspect will be checked later
     // In the Search case we can lower case values or let database ignore case
+    @SearchUsersByPagesSwagger
     @GetMapping("/search")
     public ResponseEntity<PageResponse<UserViewImp>> search(
             @RequestParam(value = "first_name", defaultValue = "") String firstName,
@@ -131,6 +118,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetUserPostsSwagger
     @GetMapping("/{id:\\d+}/posts")
     public ResponseEntity<PageResponse<PostView>> getUserPosts(
             @PathVariable Long id,
@@ -141,8 +129,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserPosts(id, page, size, toCamelCase(sortBy), direction));
     }
 
+    @UpdateProfilePictureSwagger
     @GetMapping("/upload")
-    public ResponseEntity<UserResponse> uploadFileFromClient(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<UserResponse> updateProfilePicture(@RequestParam("file") MultipartFile file) {
         UserResponse user = userService.updateProfilePicture(1L, file.getOriginalFilename() ,file);
         return ResponseEntity.ok(user);
     }
