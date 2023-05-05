@@ -1,8 +1,6 @@
 package com.hb.auth.annotation.swagger.auth;
 
-import com.hb.auth.error.ErrorResponse;
 import com.hb.auth.payload.response.BadRequestErrorResponse;
-import com.hb.auth.payload.response.user.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
