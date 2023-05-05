@@ -15,4 +15,8 @@ public interface UserView {
     default String getFullName(){
         return upperCaseFirstLetter(firstName()) +" "+upperCaseFirstLetter(lastName());
     }
+    @JsonProperty("profile_picture")
+    String profilePicture();
+    @JsonProperty("profile_thumbnail")
+    String profileThumbnail();
 }

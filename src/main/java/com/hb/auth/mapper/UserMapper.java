@@ -10,4 +10,5 @@ import org.mapstruct.Mapping;
 public interface UserMapper extends GenericMapper<User, CreateUserRequest, UserResponse>{
     @Mapping(target = "fullName", expression = "java(user.getFirstName() + \" \" + user.getLastName())")
     UserResponse entityToResponse(User user);
+
 }

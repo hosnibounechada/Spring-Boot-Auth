@@ -1,9 +1,5 @@
 package com.hb.auth.view;
 
-import com.hb.auth.util.StringUtils;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import static com.hb.auth.util.StringUtils.upperCaseFirstLetter;
 
 
@@ -12,7 +8,9 @@ public record UserViewImp(Long id,
                           String lastName,
                           Integer age,
                           String username,
-                          String email) implements UserView {
+                          String email,
+                          String profilePicture,
+                          String profileThumbnail) implements UserView {
 
     public String getFirstName() {
         return upperCaseFirstLetter(firstName);
@@ -20,5 +18,13 @@ public record UserViewImp(Long id,
 
     public String getLastName() {
         return upperCaseFirstLetter(lastName);
+    }
+
+    public String getProfilePicture() {
+        return profilePicture != null ? profilePicture : "default_profile_picture_url";
+    }
+
+    public String getProfileThumbnail() {
+        return profileThumbnail != null ? profileThumbnail : "default_profile_thumbnail_url";
     }
 }
