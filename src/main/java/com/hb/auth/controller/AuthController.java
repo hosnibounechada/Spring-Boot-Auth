@@ -1,5 +1,6 @@
 package com.hb.auth.controller;
 
+import com.hb.auth.annotation.swagger.auth.*;
 import com.hb.auth.payload.request.auth.*;
 import com.hb.auth.payload.request.user.LoginRequest;
 import com.hb.auth.payload.response.auth.LoginResponse;
@@ -19,17 +20,19 @@ import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
 
 @RestController
 @RequestMapping("${apiPrefix}/auth")
-@Tag(name = "auth", description = "the auth API")
+@AuthControllerSwagger
 @Validated
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
 
+    @RegisterSwagger
     @PostMapping("/register")
-    public UserResponse register(@Valid @RequestBody RegisterRequest body){
-        return authService.registerUser(body.firstName(), body.lastName(),body.age(),body.email(), body.password());
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest body){
+        return ResponseEntity.ok(authService.registerUser(body.firstName(), body.lastName(),body.age(),body.email(), body.password()));
     }
 
+    @LoginSwagger
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest body, HttpServletResponse response) {
         LoginResponse loginResponse = authService.loginUser(body.username(), body.password(), response);
@@ -41,18 +44,22 @@ public class AuthController {
         return ResponseEntity.ok(loginResponse);
     }
 
+    @ConfirmEmailSwagger
     @PostMapping("/ConfirmEmail")
     public ResponseEntity<Boolean> confirmEmail(@Valid @RequestBody ConfirmEmailRequest body) {
         return ResponseEntity.ok(authService.confirmEmail(body.email(), body.code()));
     }
 
+    @SendPhoneOTPSwagger
     @PostMapping ("/sendOTP")
     public ResponseEntity<Boolean> sendPhoneOTP(@Valid @RequestBody ConfirmPhoneRequest body) {
         return ResponseEntity.ok(authService.sendOTP(body.phone()));
     }
 
+
+    @VerifyPhoneOTPSwagger
     @PostMapping("/verifyOTP")
-    public ResponseEntity<Boolean> verifyOTP(@Valid @RequestBody VerifyPhoneRequest body, Principal principal) {
+    public ResponseEntity<Boolean> verifyPhoneOTP(@Valid @RequestBody VerifyPhoneRequest body, Principal principal) {
         return ResponseEntity.ok(authService.verifyOTP(Long.parseLong(principal.getName()) ,body.phone(), body.otp()));
     }
 }
