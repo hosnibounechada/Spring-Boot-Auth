@@ -2,7 +2,6 @@ package com.hb.auth.annotation.swagger.post;
 
 import com.hb.auth.payload.response.PageResponse;
 import com.hb.auth.payload.response.post.PostResponse;
-import com.hb.auth.payload.response.user.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
