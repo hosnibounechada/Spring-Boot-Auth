@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Delete user by id", description = "Can only be done by the logged in user.")
+@Operation(summary = "Delete existing user", description = "Can only be done by already authenticated user, WARNING: user will be deleted permanently with all his history")
 @ApiResponses(value = {
         @ApiResponse(description = "Successful operation", responseCode = "204", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Void.class))}),
         @ApiResponse(description = "Not Found", responseCode = "404", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),

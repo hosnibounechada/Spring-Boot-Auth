@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Update user profile picture", description = "Can only be done by the logged in user.")
+@Operation(summary = "Update a specific user profile picture", description = "Can only be done by the logged in user, and providing image type file.")
 @ApiResponses(value = {
         @ApiResponse(description = "successful operation", responseCode = "201", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))}),
         @ApiResponse(description = "Bad Request, File Type | File Size", responseCode = "400", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))}),

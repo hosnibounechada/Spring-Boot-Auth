@@ -1,7 +1,7 @@
-package com.hb.auth.annotation.swagger.user;
+package com.hb.auth.annotation.swagger.post;
 
-import com.hb.auth.error.ErrorResponse;
 import com.hb.auth.payload.response.BadRequestErrorResponse;
+import com.hb.auth.payload.response.post.PostResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,11 +16,10 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Register new user", description = "Can only done by already registered admin, the default role is set to USER, must be confirmed by confirming the provided Email")
+@Operation(summary = "Create new post", description = "Can only be done by the logged in user.")
 @ApiResponses(value = {
-        @ApiResponse(description = "successful operation", responseCode = "201", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))}),
+        @ApiResponse(description = "successful operation", responseCode = "201", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = PostResponse.class))}),
         @ApiResponse(description = "Bad Request", responseCode = "400", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))}),
-        @ApiResponse(description = "Conflict, already exist", responseCode = "409", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))}),
 })
-public @interface CreateUserSwagger {
+public @interface CreatePostSwagger {
 }

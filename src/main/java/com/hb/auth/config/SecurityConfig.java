@@ -1,6 +1,5 @@
 package com.hb.auth.config;
 
-
 import com.hb.auth.security.util.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -29,6 +28,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +41,15 @@ public class SecurityConfig {
 
     @Value("${apiPrefix}")
     private String API_PREFIX;
+
+    private List<RequestMatcher> getIgnoredRequestMatchers() {
+        return Arrays.asList(
+                AntPathRequestMatcher.antMatcher("/h2-console/**"),
+                AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
+                AntPathRequestMatcher.antMatcher("/api-docs/**"),
+                AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**")
+        );
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -54,24 +66,11 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.ignoringRequestMatchers(
-                        AntPathRequestMatcher.antMatcher("/h2-console/**"),
-                        AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
-                        AntPathRequestMatcher.antMatcher("/api-docs/**"),
-                        AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"),
-                        AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**"),
-                        AntPathRequestMatcher.antMatcher(API_PREFIX + "/posts/**"))
-                )
+        http
+                .csrf(csrf -> csrf.ignoringRequestMatchers(getIgnoredRequestMatchers().toArray(new RequestMatcher[0])))
                 .headers(headers -> headers.frameOptions().disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                AntPathRequestMatcher.antMatcher("/h2-console/**"),
-                                AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
-                                AntPathRequestMatcher.antMatcher("/api-docs/**"),
-                                AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"),
-                                AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**"),
-                                AntPathRequestMatcher.antMatcher(API_PREFIX + "/posts/**")
-                        ).permitAll()
+                        .requestMatchers(getIgnoredRequestMatchers().toArray(new RequestMatcher[0])).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/admin/**")).hasRole("ADMIN")
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/user/**")).hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
