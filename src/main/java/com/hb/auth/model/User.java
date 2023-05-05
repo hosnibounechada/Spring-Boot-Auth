@@ -82,6 +82,18 @@ public class User implements UserDetails {
     )
     private String password;
 
+    @Column(
+            name = "profile_picture",
+            columnDefinition = "TEXT"
+    )
+    private String profilePicture;
+
+    @Column(
+            name = "profile_thumbnail",
+            columnDefinition = "TEXT"
+    )
+    private String profileThumbnail;
+
     @OneToMany(
             mappedBy = "user",
             orphanRemoval = true,
