@@ -7,8 +7,6 @@ import com.hb.auth.model.User;
 import com.hb.auth.repository.PostRepository;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
-import com.hb.auth.util.NumberUtils;
-import com.hb.auth.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -29,7 +27,7 @@ public class DataLoader implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         loadRoles();
         loadUsers();
         loadPosts();
@@ -46,7 +44,7 @@ public class DataLoader implements CommandLineRunner {
         Set<Role> roles = new HashSet<>();
         roles.add(adminRole);
 
-        User admin = new User("admin", "admin", 28,"admin_admin_0000", "admin@admin.com", passwordEncoder.encode("password"), roles);
+        User admin = new User("admin", "admin", 28,"admin_admin_0000", "admin@admin.com", passwordEncoder.encode("Azer123&"), roles);
 
         userRepository.save(admin);
     }
@@ -59,8 +57,8 @@ public class DataLoader implements CommandLineRunner {
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
 
-        User hosni = new User("hosni", "bounechada", 28, "hosni_bounechada_0000", "hosni@gmail.com", passwordEncoder.encode("azerty"), roles);
-        User mohammed = new User("mohammed", "bounab", 26, "mohammed_bounab_0000", "mohammed@gmail.com", passwordEncoder.encode("azerty"), roles);
+        User hosni = new User("hosni", "bounechada", 28, "hosni_bounechada_0000", "hosni@gmail.com", passwordEncoder.encode("Azer123&"), roles);
+        User mohammed = new User("mohammed", "bounab", 26, "mohammed_bounab_0000", "mohammed@gmail.com", passwordEncoder.encode("Azer123&"), roles);
 
         List<Post> posts = List.of(
                 new Post(2L, "First Hosni Post", hosni),

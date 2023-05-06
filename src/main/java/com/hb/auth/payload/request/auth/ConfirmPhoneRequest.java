@@ -1,4 +1,6 @@
 package com.hb.auth.payload.request.auth;
 
-public record ConfirmPhoneRequest (String phone){
+import com.hb.auth.annotation.model.User;
+
+public record ConfirmPhoneRequest (@User.Phone String phone){
 }

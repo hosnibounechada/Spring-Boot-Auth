@@ -1,4 +1,7 @@
 package com.hb.auth.payload.request.auth;
 
-public record ConfirmEmailRequest(String email, String code) {
+import com.hb.auth.annotation.model.Auth;
+import com.hb.auth.annotation.model.User;
+
+public record ConfirmEmailRequest(@User.Email String email,@Auth.SixDigitCode String code) {
 }

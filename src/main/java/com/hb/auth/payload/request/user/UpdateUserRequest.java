@@ -1,9 +1,8 @@
 package com.hb.auth.payload.request.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hb.auth.annotation.model.User;
 import com.hb.auth.payload.request.BaseRequestDTO;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,15 +11,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 public class UpdateUserRequest extends BaseRequestDTO {
+    @User.FirstName
     @JsonProperty("first_name")
-    @NotBlank(message = "this field should not be blanc")
-    @Size(min = 3, max = 50, message = "the size must be between 3 and 50")
     private String firstName;
 
-    @NotBlank(message = "this field should not be blanc")
-    @Size(min = 3, max = 50, message = "the size must be between 3 and 50")
+    @User.LastName
     @JsonProperty("last_name")
     private String lastName;
+
+    @User.Age
     private Integer age;
 
     public String getFirstName() {

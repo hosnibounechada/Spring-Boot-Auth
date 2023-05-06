@@ -1,30 +1,22 @@
 package com.hb.auth.payload.request.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.hb.auth.annotation.model.User;
 
 import java.util.Locale;
 
 public record RegisterRequest(
+        @User.FirstName
         @JsonProperty("first_name")
-        @NotBlank(message = "this field should not be blanc")
-        @Size(min = 3, max = 50, message = "the size must be between 3 and 50")
-
         String firstName,
-        @NotBlank(message = "this field should not be blanc")
-        @Size(min = 3, max = 50, message = "the size must be between 3 and 50")
+        @User.LastName
         @JsonProperty("last_name")
         String lastName,
+        @User.Age
         Integer age,
-        @NotBlank
-        @Size(max = 50)
-        @Email(message = "must be a syntactically correct email address")
+        @User.Email
         String email,
-        @NotBlank
-        @Size(min = 6, max = 128)
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+        @User.Password
         String password) {
     public String firstName() {
         return firstName.toLowerCase(Locale.ROOT);

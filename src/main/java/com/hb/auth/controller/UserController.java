@@ -77,6 +77,7 @@ public class UserController {
     @PostMapping(consumes = {"application/json"})
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
+//        ObjectValidator.validate(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
