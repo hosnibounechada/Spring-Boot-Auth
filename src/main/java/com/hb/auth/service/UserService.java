@@ -1,6 +1,6 @@
 package com.hb.auth.service;
 
-import com.hb.auth.annotation.CustomAnnotation;
+import com.hb.auth.annotation.CustomAnnotationForAspect;
 import com.hb.auth.common.service.MinioService;
 import com.hb.auth.exception.ConflictException;
 import com.hb.auth.exception.GoneException;
@@ -14,20 +14,16 @@ import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.PostRepository;
 import com.hb.auth.repository.UserRepository;
 import com.hb.auth.util.NumberUtils;
-import com.hb.auth.util.StringUtils;
 import com.hb.auth.util.UpdateObject;
 import com.hb.auth.view.PostView;
-import com.hb.auth.view.UserView;
 import com.hb.auth.view.UserViewImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -68,7 +64,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
     }
 
     @Override
-    @CustomAnnotation
+    @CustomAnnotationForAspect
     public UserResponse getById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
 

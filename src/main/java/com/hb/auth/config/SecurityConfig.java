@@ -30,7 +30,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -42,13 +41,14 @@ public class SecurityConfig {
     @Value("${apiPrefix}")
     private String API_PREFIX;
 
-    private List<RequestMatcher> getIgnoredRequestMatchers() {
-        return Arrays.asList(
+    private RequestMatcher[] getIgnoredRequestMatchers() {
+        return List.of(
                 AntPathRequestMatcher.antMatcher("/h2-console/**"),
                 AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
                 AntPathRequestMatcher.antMatcher("/api-docs/**"),
-                AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**")
-        );
+                AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"),
+                AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**")
+        ).toArray(new RequestMatcher[0]);
     }
 
     @Bean
@@ -67,10 +67,10 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers(getIgnoredRequestMatchers().toArray(new RequestMatcher[0])))
+                .csrf(csrf -> csrf.ignoringRequestMatchers(getIgnoredRequestMatchers()))
                 .headers(headers -> headers.frameOptions().disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(getIgnoredRequestMatchers().toArray(new RequestMatcher[0])).permitAll()
+                        .requestMatchers(getIgnoredRequestMatchers()).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/admin/**")).hasRole("ADMIN")
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/user/**")).hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()

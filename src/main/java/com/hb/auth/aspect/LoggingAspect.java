@@ -1,17 +1,22 @@
 package com.hb.auth.aspect;
 
+import com.hb.auth.payload.request.user.CreateUserRequest;
+import com.hb.auth.payload.response.user.UserResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 @Aspect
 @Component
+@Slf4j
 public class LoggingAspect {
     /**
-     *This AOP allow to execute Advice on package and its classes and methods
+     * This AOP allow to execute Advice on package and its classes and methods
      */
     @Pointcut("execution(* com.hb.auth.controller.*.*(..))")
     public void loggingPointCut() {
@@ -19,107 +24,63 @@ public class LoggingAspect {
 
     @Before("loggingPointCut()")
     public void before(JoinPoint joinPoint) {
-        System.out.println("====Before Evey Methode Invoke in Controllers ====>" + joinPoint.getSignature());
+        log.info("== Before all Methods in Controller package ==> " + joinPoint.getSignature());
     }
 
     @After("loggingPointCut()")
     public void after(JoinPoint joinPoint) {
-        System.out.println("====After Every Methode Invoke in Controllers ====>" + joinPoint.getSignature());
+        log.info("== After all Methods in Controller package ==> " + joinPoint.getSignature());
     }
 
-    /*@Before("execution(* com.hb.blog.controller.UserController.create(..))" +
-            "&& args(requestBody,..)")
-    public void printRequestBody(JoinPoint joinPoint, Object requestBody) {
+    @Before("execution(* com.hb.auth.controller.UserController.create(..)) && args(requestBody,..)")
+    public void printRequestBody(Object requestBody) {
         if (requestBody instanceof CreateUserRequest request) {
-            System.out.println("============= Before Create User Request ==============");
-            System.out.println(request);
-            System.out.println("=======================================================");
+            log.info("== Before Create User Request ==> " + request);
         }
     }
 
     @Around("loggingPointCut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.out.println("========Before Every Methode Invoke in Controllers ==========");
-        System.out.println(joinPoint.getArgs()[0]);
-        System.out.println("============================================================");
+        log.info("== Before Every Methode Invoke in Controllers ==> " + joinPoint.getArgs()[0]);
 
         Object object = joinPoint.proceed();
-        if (object instanceof ResponseEntity<?>) {
-            ResponseEntity<UserResponse> userResponse = (ResponseEntity<UserResponse>) object;
-            System.out.println("=====After Create User Methode Invoke in Controllers ======");
-            System.out.println(userResponse);
-            System.out.println("============================================================");
+        if (object instanceof ResponseEntity<?> && ((ResponseEntity<?>) object).getBody() instanceof UserResponse response) {
+            log.info("== After successful registration of user ==> " + response);
         }
         return object;
-    }*/
+    }
 
     /**
-     *This AOP allow to execute Advice on specific package
+     * within(com.hb.auth.service.*) AOP allow to execute Advice on specific package
+     * within(com.hb.auth.service.UserService) AOP allow to execute Advice on specific class
      */
-    /*@Pointcut("within(com.hb.blog.service.*)")
+    @Pointcut(value = "within(com.hb.auth.service.*)")
     public void loggingServicePointCut() {
     }
     @Before("loggingServicePointCut()")
     public void beforeService(JoinPoint joinPoint) {
-        System.out.println("========Before Evey Methode Invoke in Service package ==========");
-        System.out.println(joinPoint.getSignature());
-        System.out.println("============================================================");
-    }*/
-
-    /**
-     *This AOP allow to execute Advice on specific Class
-     */
-    /*@Pointcut("within(com.hb.blog.service.UserService)")
-    public void loggingUserServicePointCut() {
+        log.info("== Within Service package ==> " + joinPoint.getSignature());
     }
 
-    @After("loggingUserServicePointCut()")
-    public void afterUserService(JoinPoint joinPoint) {
-        System.out.println("========After Every Methode Invoke in User Service ==========");
-        System.out.println(joinPoint.getSignature());
-        System.out.println("============================================================");
-    }*/
-
     /**
-     *This AOP allow to execute Advice based on Methods or Fields that contains @Annotation
+     * This AOP allow to execute Advice based on Methods or Fields that contains @Annotation
      */
-    /*@Pointcut("@annotation(com.hb.blog.annotation.CustomAnnotation)")
+    @Pointcut("@annotation(com.hb.auth.annotation.CustomAnnotationForAspect)")
     public void loggingAnnotationPointCut() {
     }
+
     @After("loggingAnnotationPointCut()")
     public void afterCustomAnnotation(JoinPoint joinPoint) {
-        System.out.println("=====After Every Methode Contains @CustomAnnotation =======");
-        System.out.println(joinPoint.getSignature());
-        System.out.println("============================================================");
-    }*/
+        log.info("== After Methods Contains @CustomAnnotationForAspect ==> " + joinPoint.getSignature());
+    }
 
     /**
-     *This AOP allow to execute Advice based on Methods and @Annotation
+     * This AOP allow to execute Advice based on Methods and @Annotation
+     * Can be used as middleware to lowercase user inputs for example
      */
-    /*@Before("execution(* com.hb.blog.controller.UserController.search(..))" +
+    @Before("execution(* com.hb.auth.controller.UserController.search(..))" +
             "&& @annotation(org.springframework.web.bind.annotation.GetMapping)")
-    public void queryParamsToLowerCase(JoinPoint joinPoint) {
-        System.out.println(Arrays.toString(joinPoint.getArgs()));
-        Object[] args = joinPoint.getArgs();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof String) {
-                args[i] = ((String) args[i]).toLowerCase();
-            }
-        }
-    }*/
-
-/*    @Around("execution(* com.hb.blog.controller.UserController.search(..))")
-    public Object convertToLowerCase(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-        String firstName = request.getParameter("first_name");
-        String lastName = request.getParameter("last_name");
-
-        if (firstName != null) request.setAttribute("firstName", firstName.toLowerCase());
-        if (lastName != null) request.setAttribute("lastName", lastName.toLowerCase());
-
-        return joinPoint.proceed();
-    }*/
-
-    // Lower Case the values of form data before it reach the search controller
+    public void beforeSearchAndGetMethod(JoinPoint joinPoint) {
+        log.info(Arrays.toString(joinPoint.getArgs()));
+    }
 }

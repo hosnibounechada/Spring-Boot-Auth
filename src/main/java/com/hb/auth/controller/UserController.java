@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -67,10 +66,9 @@ public class UserController {
     @GetMapping("/{id:\\d+}")
     public ResponseEntity<UserResponse> getById(
             @Parameter(name = "id", example = "1")
+            @Digits(integer = 5, fraction = 0, message = "must be integer with 5 numbers length at max")
+            @Max(value = 99999, message = "must not be lesser then 100000")
             @PathVariable("id")
-            @Digits(integer = 3, fraction = 0, message = "must be integer 3 numbers length")
-            @Min(value = 0, message = "must be at minimum 0")
-            @Max(value = 999, message = "must be less than 1000")
             Long id) {
         return ResponseEntity.ok(userService.getById(id));
     }
