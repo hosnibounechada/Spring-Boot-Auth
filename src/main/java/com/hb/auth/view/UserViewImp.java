@@ -12,19 +12,18 @@ public record UserViewImp(Long id,
                           String profilePicture,
                           String profileThumbnail) implements UserView {
 
-    public String getFirstName() {
+    public String firstName() {
         return upperCaseFirstLetter(firstName);
     }
 
-    public String getLastName() {
+    public String lastName() {
         return upperCaseFirstLetter(lastName);
     }
 
-    public String getProfilePicture() {
+    public String profilePicture() {
         return profilePicture != null ? profilePicture : "default_profile_picture_url";
     }
-
-    public String getProfileThumbnail() {
+    public String profileThumbnail() {
         return profileThumbnail != null ? profileThumbnail : "default_profile_thumbnail_url";
     }
 }

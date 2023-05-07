@@ -113,6 +113,7 @@ public class UserController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "firstName, lastName") String[] sortBy,
             @RequestParam(value = "direction", defaultValue = "asc") String direction) {
+        System.out.println();
         PageResponse<UserViewImp> response = userService.search(firstName.toLowerCase(), lastName.toLowerCase(), page, size, toCamelCase(sortBy), direction);
         return ResponseEntity.ok(response);
     }

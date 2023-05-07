@@ -1,6 +1,6 @@
 package com.hb.auth.service;
 
-import com.hb.auth.annotation.CustomAnnotationForAspect;
+import com.hb.auth.annotation.aspect.CustomAnnotationForAspect;
 import com.hb.auth.common.service.MinioService;
 import com.hb.auth.exception.ConflictException;
 import com.hb.auth.exception.GoneException;
@@ -136,9 +136,6 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
             String[] sortBy,
             String direction) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
-
-
-//        return userRepository.getUserByFirstNameOrLastNameOrderByFirstNameAscLastNameAsc(firstName, lastName);
 
         Page<UserViewImp> page = userRepository.getUserByFirstNameOrLastName(firstName, lastName, pageable);
 

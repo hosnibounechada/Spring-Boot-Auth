@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnTransformer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
@@ -40,6 +42,10 @@ public class User implements UserDetails {
             nullable = false,
             length = 50
     )
+    // Should be implemented conditionally based on the database dialect
+    // initcap function uppercase the first letter of each word in the database layer
+    // @ConditionalOnPostgres
+    // @ColumnTransformer(read = "initcap(first_name)")
     private String firstName;
 
     @Column(
