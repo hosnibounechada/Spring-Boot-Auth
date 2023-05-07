@@ -41,7 +41,7 @@ public class LoggingAspect {
 
     @Around("loggingPointCut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        log.info("== Before Every Methode Invoke in Controllers ==> " + joinPoint.getArgs()[0]);
+        //log.info("== Before Every Methode Invoke in Controllers ==> " + joinPoint.getArgs()[0]);
 
         Object object = joinPoint.proceed();
         if (object instanceof ResponseEntity<?> && ((ResponseEntity<?>) object).getBody() instanceof UserResponse response) {
@@ -65,7 +65,7 @@ public class LoggingAspect {
     /**
      * This AOP allow to execute Advice based on Methods or Fields that contains @Annotation
      */
-    @Pointcut("@annotation(com.hb.auth.annotation.CustomAnnotationForAspect)")
+    @Pointcut("@annotation(com.hb.auth.annotation.aspect.CustomAnnotationForAspect)")
     public void loggingAnnotationPointCut() {
     }
 

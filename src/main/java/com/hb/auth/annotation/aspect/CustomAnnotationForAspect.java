@@ -1,4 +1,4 @@
-package com.hb.auth.annotation;
+package com.hb.auth.annotation.aspect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
