@@ -1,17 +1,11 @@
 package com.hb.auth.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.twilio.Twilio;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//@ConfigurationProperties(prefix = "twilio")
-/*@Configuration
-@AllArgsConstructor
-@Data
+@Configuration
 public class TwilioConfig {
     @Value("${twilio.account.sid}")
     private String accountSid;
@@ -19,6 +13,8 @@ public class TwilioConfig {
     @Value("${twilio.auth.token}")
     private String authToken;
 
-    @Value("${twilio.phone.number}")
-    private String phoneNumber;
-}*/
+    @PostConstruct
+    public void init(){
+        Twilio.init(accountSid, authToken);
+    }
+}

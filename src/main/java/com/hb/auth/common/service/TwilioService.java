@@ -13,11 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TwilioService {
-    @Value("${twilio.account.sid}")
-    private String accountSid;
-
-    @Value("${twilio.auth.token}")
-    private String authToken;
 
     @Value("${twilio.service.sid}")
     private String serviceSid;
@@ -32,8 +27,6 @@ public class TwilioService {
      * @return Boolean
      */
     public boolean sendMessage(String to) {
-        Twilio.init(accountSid, authToken);
-
         Message.creator(new PhoneNumber(to),
                 new PhoneNumber(to),
                 "Welcome client ").create();
@@ -49,7 +42,6 @@ public class TwilioService {
      */
 
     public boolean sendOTP(String to) {
-        Twilio.init(accountSid, authToken);
         Verification.creator(
                         serviceSid, // this is your verification sid
                         to, //this is your Twilio verified recipient phone number
@@ -66,8 +58,6 @@ public class TwilioService {
      * @return Boolean
      */
     public boolean verifyOTP(String phone, String otp) {
-        Twilio.init(accountSid, authToken);
-
         try {
 
             VerificationCheck.creator(
