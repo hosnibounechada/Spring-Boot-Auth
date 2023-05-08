@@ -24,7 +24,7 @@ public class ObjectValidator {
         if (!validations.isEmpty()) {
             List<ErrorModel> errors = validations
                     .stream()
-                    .map(error -> new ErrorModel(toSnakeCase(error.getPropertyPath().toString()), error.getInvalidValue().toString(), error.getMessage()))
+                    .map(error -> new ErrorModel(toSnakeCase(error.getPropertyPath().toString()),error.getInvalidValue() == null ? "" : error.getInvalidValue().toString(), error.getMessage()))
                     .collect(Collectors.toList());
             throw new ObjectNotValidException("Validation failed", errors);
         }
