@@ -7,11 +7,12 @@ import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
 
@@ -26,14 +27,22 @@ public class AuthController {
     private final AuthService authService;
 
     @RegisterSwagger
-    @PostMapping(value = "/register", consumes = "application/json", produces = "text/html")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest body) {
+    @PostMapping(value = "/register", consumes = "application/json")
+    public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest body) {
         return ResponseEntity.ok(authService.registerUser(body.firstName(), body.lastName(), body.age(), body.email(), body.password()));
     }
 
+    /*@RegisterSwagger
+    @PostMapping(value = "/register", consumes = "application/json")
+    public RedirectView registerAndRedirect(@RequestBody RegisterRequest body*//*, RedirectAttributes attributes*//*) {
+        authService.registerUser(body.firstName(), body.lastName(), body.age(), body.email(), body.password());
+        //attributes.addAttribute("email", body.email());
+        return new RedirectView("http://localhost:8080/api/v1/confirmation/email/"+body.email());
+    }*/
+
     @LoginSwagger
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest body, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest body, HttpServletResponse response) {
         LoginResponse loginResponse = authService.loginUser(body.username(), body.password(), response);
 
         if (loginResponse.userResponse() != null) assignJwtToCookie(loginResponse.jwt(), response);
@@ -43,19 +52,19 @@ public class AuthController {
 
     @ConfirmEmailSwagger
     @PostMapping("/ConfirmEmail")
-    public ResponseEntity<Boolean> confirmEmail(@Valid @RequestBody ConfirmEmailRequest body) {
+    public ResponseEntity<Boolean> confirmEmail(@RequestBody ConfirmEmailRequest body) {
         return ResponseEntity.ok(authService.confirmEmail(body.email(), body.code()));
     }
 
     @SendPhoneOTPSwagger
     @PostMapping("/sendOTP")
-    public ResponseEntity<Boolean> sendPhoneOTP(@Valid @RequestBody ConfirmPhoneRequest body) {
+    public ResponseEntity<Boolean> sendPhoneOTP(@RequestBody ConfirmPhoneRequest body) {
         return ResponseEntity.ok(authService.sendOTP(body.phone()));
     }
 
     @VerifyPhoneOTPSwagger
     @PostMapping("/verifyOTP")
-    public ResponseEntity<Boolean> verifyPhoneOTP(@Valid @RequestBody VerifyPhoneRequest body, Principal principal) {
+    public ResponseEntity<Boolean> verifyPhoneOTP(@RequestBody VerifyPhoneRequest body, Principal principal) {
         return ResponseEntity.ok(authService.verifyOTP(Long.parseLong(principal.getName()), body.phone(), body.otp()));
     }
 }

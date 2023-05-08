@@ -43,10 +43,12 @@ public class SecurityConfig {
 
     private RequestMatcher[] getIgnoredRequestMatchers() {
         return List.of(
+                AntPathRequestMatcher.antMatcher("/"),
                 AntPathRequestMatcher.antMatcher("/site/**"),
                 AntPathRequestMatcher.antMatcher("/h2-console/**"),
                 AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
                 AntPathRequestMatcher.antMatcher("/api-docs/**"),
+                AntPathRequestMatcher.antMatcher(API_PREFIX +"/confirmation/**"),
                 AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"),
                 AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**")
         ).toArray(new RequestMatcher[0]);

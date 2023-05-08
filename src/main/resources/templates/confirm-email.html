@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Account</title>
+</head>
+<body>
+<form method="post" action="http://localhost:8080/api/v1/auth/confirmEmail">
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email" minlength="6" maxlength="50" required th:value="${email}" th:with="email=${email}"><!--[[${email}]]-->
+    <label for="code">Enter your 6-digit code:</label>
+    <input type="text" id="code" name="code" minlength="6" maxlength="6" required>
+    <br>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
