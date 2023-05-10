@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Operation(summary = "Register new user", description = "User must enter a valid credentials, and then confirm their email")
-@ApiResponse(description = "Successful operation", responseCode = "200", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))})
+@ApiResponse(description = "Successful operation", responseCode = "201", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))})
 @ApiResponse(description = "Bad request", responseCode = "400", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))})
-@ApiResponse(description = "Unauthorized, Invalid Credentials", responseCode = "401", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+@ApiResponse(description = "Conflict, existing record", responseCode = "409", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
 
 public @interface RegisterSwagger { }

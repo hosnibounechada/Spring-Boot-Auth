@@ -35,6 +35,7 @@ public interface User {
     @Target(ElementType.FIELD)
     @Constraint(validatedBy = {})
     @Documented
+    @NotNull(message = "Age is required field")
     @Min(value = 18, message = "Age must be greater than or equal to 18")
     @Max(value = 120, message = "Age must be less than or equal to 120")
     @interface Age {
@@ -47,6 +48,7 @@ public interface User {
     @Target(ElementType.FIELD)
     @Constraint(validatedBy = {})
     @Documented
+    @NotBlank(message = "Username is required")
     @Pattern(regexp = "^[a-zA-Z0-9_-]{3,16}$", message = "Username must be 3-16 characters long and can only contain letters, numbers, underscores, and hyphens")
     @interface Username {
         String message() default "Invalid username";
@@ -58,7 +60,7 @@ public interface User {
     @Target(ElementType.FIELD)
     @Constraint(validatedBy = {})
     @Documented
-    @NotBlank
+    @NotBlank(message = "Email is required")
     @Size(max = 50)
     @jakarta.validation.constraints.Email(message = "must be a syntactically correct email address")
     @interface Email {
@@ -71,6 +73,7 @@ public interface User {
     @Target(ElementType.FIELD)
     @Constraint(validatedBy = {})
     @Documented
+    @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "(\\+213|0)([567])[0-9]{8}", message = "Invalid Algerian phone number")
     @interface Phone {
         String message() default "Invalid Algerian phone number";
@@ -82,6 +85,7 @@ public interface User {
     @Target(ElementType.FIELD)
     @Constraint(validatedBy = {})
     @Documented
+    @NotBlank(message = "Password is required")
     @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters long")
     @Pattern.List({
             @Pattern(regexp = "(?=.*[0-9]).+", message = "Password must contain at least one digit"),
