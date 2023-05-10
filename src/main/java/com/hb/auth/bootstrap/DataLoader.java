@@ -19,7 +19,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-@Profile({"dev", "local"})
+@Profile({"local"})
 public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
