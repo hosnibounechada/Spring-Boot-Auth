@@ -5,11 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
 @Entity(name = "Post")
 @Table(
-        name = "post"
+        name = "posts"
 )
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,13 +37,8 @@ public class Post {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id",
             referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "user_post_fkey"))
+            foreignKey = @ForeignKey(name = "posts_user_id_fkey"))
     private User user;
-
-
-    public Post(String content) {
-        this.content = content;
-    }
 
     public Post(String content, User user) {
         this.content = content;

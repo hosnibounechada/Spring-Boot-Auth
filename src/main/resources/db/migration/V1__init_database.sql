@@ -82,41 +82,41 @@ CREATE TABLE IF NOT EXISTS public.roles
 ALTER TABLE IF EXISTS public.roles
     OWNER to postgres;
 
--- Table: public.user_role
+-- Table: public.user_roles
 
--- DROP TABLE IF EXISTS public.user_role;
+-- DROP TABLE IF EXISTS public.user_roles;
 
-CREATE TABLE IF NOT EXISTS public.user_role
+CREATE TABLE IF NOT EXISTS public.user_roles
 (
     user_id bigint NOT NULL,
     role_id bigint NOT NULL,
-    CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id),
-    CONSTRAINT fkj345gk1bovqvfame88rcx7yyx FOREIGN KEY (user_id)
-    REFERENCES public.users (id) MATCH SIMPLE
+    CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, role_id),
+    CONSTRAINT user_roles_role_id_fkey FOREIGN KEY (role_id)
+    REFERENCES public.roles (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION,
-    CONSTRAINT fkt7e7djp752sqn6w22i6ocqy6q FOREIGN KEY (role_id)
-    REFERENCES public.roles (id) MATCH SIMPLE
+    CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     )
 
     TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.user_role
+ALTER TABLE IF EXISTS public.user_roles
     OWNER to postgres;
 
--- Table: public.post
+-- Table: public.posts
 
--- DROP TABLE IF EXISTS public.post;
+-- DROP TABLE IF EXISTS public.posts;
 
-CREATE TABLE IF NOT EXISTS public.post
+CREATE TABLE IF NOT EXISTS public.posts
 (
     id bigint NOT NULL,
     content text COLLATE pg_catalog."default" NOT NULL,
     user_id bigint,
-    CONSTRAINT post_pkey PRIMARY KEY (id),
-    CONSTRAINT user_post_fkey FOREIGN KEY (user_id)
+    CONSTRAINT posts_pkey PRIMARY KEY (id),
+    CONSTRAINT posts_user_id_fkey FOREIGN KEY (user_id)
     REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
@@ -124,5 +124,5 @@ CREATE TABLE IF NOT EXISTS public.post
 
     TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.post
+ALTER TABLE IF EXISTS public.posts
     OWNER to postgres;

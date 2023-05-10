@@ -5,11 +5,11 @@ INSERT INTO public.users (id, age, email, first_name, last_name, password, usern
 INSERT INTO public.roles (id, authority) VALUES (1, 'ADMIN');
 INSERT INTO public.roles (id, authority) VALUES (2, 'USER');
 
-INSERT INTO public.user_role (user_id, role_id) VALUES (1, 1);
-INSERT INTO public.user_role (user_id, role_id) VALUES (2, 2);
-INSERT INTO public.user_role (user_id, role_id) VALUES (3, 2);
+INSERT INTO public.user_roles (user_id, role_id) VALUES (1, 1);
+INSERT INTO public.user_roles (user_id, role_id) VALUES (2, 2);
+INSERT INTO public.user_roles (user_id, role_id) VALUES (3, 2);
 
-INSERT INTO public.post (id, content, user_id) VALUES (1, 'First Admin post', 1);
-INSERT INTO public.post (id, content, user_id) VALUES (2, 'First Hosni post', 2);
-INSERT INTO public.post (id, content, user_id) VALUES (3, 'First Mohammed post', 3);
-INSERT INTO public.post (id, content, user_id) VALUES (4, 'Second Hosni post', 2);
+INSERT INTO public.posts (id, content, user_id) VALUES (1, 'First Admin post', 1);
+INSERT INTO public.posts (id, content, user_id) VALUES (2, 'First Hosni post', 2);
+INSERT INTO public.posts (id, content, user_id) VALUES (3, 'First Mohammed post', 3);
+INSERT INTO public.posts (id, content, user_id) VALUES (4, 'Second Hosni post', 2);

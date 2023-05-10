@@ -76,7 +76,7 @@ public class UserController {
     @CreateUserSwagger
     @PostMapping(consumes = {"application/json"})
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
+    public ResponseEntity<UserResponse> create(@RequestBody CreateUserRequest request) {
 //        ObjectValidator.validate(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
@@ -85,7 +85,7 @@ public class UserController {
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<UserResponse> update(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateUserRequest request) {
+            @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(userService.update(id, request));
     }
 
