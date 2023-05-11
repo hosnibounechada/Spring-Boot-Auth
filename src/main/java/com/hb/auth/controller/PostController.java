@@ -6,7 +6,6 @@ import com.hb.auth.payload.request.post.UpdatePostRequest;
 import com.hb.auth.payload.response.PageResponse;
 import com.hb.auth.payload.response.post.PostResponse;
 import com.hb.auth.service.PostService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

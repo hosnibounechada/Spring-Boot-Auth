@@ -2,6 +2,13 @@ package com.hb.auth.payload.request.auth;
 
 import com.hb.auth.annotation.model.Auth;
 import com.hb.auth.annotation.model.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ConfirmEmailRequest(@User.Email String email,@Auth.SixDigitCode String code) {
+public record ConfirmEmailRequest(
+        @User.Email
+        @Schema(description = "User's email", example = "john@doe.com")
+        String email,
+        @Auth.SixDigitCode
+        @Schema(description = "6 digit code", example = "123456")
+        String code) {
 }

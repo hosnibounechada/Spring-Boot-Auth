@@ -1,5 +1,6 @@
 package com.hb.auth.annotation.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.*;

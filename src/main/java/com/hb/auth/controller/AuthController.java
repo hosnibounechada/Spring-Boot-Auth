@@ -2,7 +2,7 @@ package com.hb.auth.controller;
 
 import com.hb.auth.annotation.swagger.auth.*;
 import com.hb.auth.payload.request.auth.*;
-import com.hb.auth.payload.request.user.LoginRequest;
+import com.hb.auth.payload.request.auth.LoginRequest;
 import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.service.AuthService;
@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
 
