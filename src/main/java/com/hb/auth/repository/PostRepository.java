@@ -1,6 +1,6 @@
 package com.hb.auth.repository;
 
-import com.hb.auth.model.Post;
+import com.hb.auth.model.postgres.Post;
 import com.hb.auth.view.PostView;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;

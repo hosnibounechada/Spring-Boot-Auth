@@ -1,9 +1,9 @@
 package com.hb.auth.bootstrap;
 
 import com.hb.auth.exception.NotFoundException;
-import com.hb.auth.model.Post;
-import com.hb.auth.model.Role;
-import com.hb.auth.model.User;
+import com.hb.auth.model.postgres.Post;
+import com.hb.auth.model.postgres.Role;
+import com.hb.auth.model.postgres.User;
 import com.hb.auth.repository.PostRepository;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
@@ -36,7 +36,7 @@ public class DataLoader implements CommandLineRunner {
     /**
      * Seed Roles in the startup
      */
-    public void loadRoles() {
+    private void loadRoles() {
         if (roleRepository.findByAuthority("ADMIN").isPresent()) return;
         Role adminRole = roleRepository.save(new Role("ADMIN"));
         roleRepository.save(new Role("USER"));
@@ -51,7 +51,7 @@ public class DataLoader implements CommandLineRunner {
     /**
      * Seed Users in the startup
      */
-    public void loadUsers() {
+    private void loadUsers() {
 
         Role userRole = roleRepository.findByAuthority("USER").orElseThrow(() -> new NotFoundException("Role Not Found!"));
         Set<Role> roles = new HashSet<>();
@@ -69,7 +69,7 @@ public class DataLoader implements CommandLineRunner {
     /**
      * Seed Posts in the startup
      */
-    public void loadPosts() {
+    private void loadPosts() {
         User hosni = userRepository.findById(2L).orElseThrow(() -> new NotFoundException("User Not Found!"));
         Post post = new Post(3L, "Second Hosni Post", hosni);
         postRepository.save(post);

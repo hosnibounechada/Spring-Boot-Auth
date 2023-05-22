@@ -1,4 +1,4 @@
-package com.hb.auth.model;
+package com.hb.auth.model.postgres;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

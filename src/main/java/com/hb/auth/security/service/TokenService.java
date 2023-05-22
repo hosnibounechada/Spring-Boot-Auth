@@ -1,7 +1,7 @@
 package com.hb.auth.security.service;
 
 
-import com.hb.auth.model.User;
+import com.hb.auth.model.postgres.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

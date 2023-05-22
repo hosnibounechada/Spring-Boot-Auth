@@ -1,6 +1,6 @@
 package com.hb.auth.repository;
 
-import com.hb.auth.model.User;
+import com.hb.auth.model.postgres.User;
 import com.hb.auth.view.UserView;
 import com.hb.auth.view.UserViewImp;
 import jakarta.transaction.Transactional;

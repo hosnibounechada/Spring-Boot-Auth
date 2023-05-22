@@ -1,7 +1,7 @@
 package com.hb.auth.util;
 
-import com.hb.auth.model.Post;
-import com.hb.auth.model.User;
+import com.hb.auth.model.postgres.Post;
+import com.hb.auth.model.postgres.User;
 import com.hb.auth.payload.request.post.UpdatePostRequest;
 import com.hb.auth.payload.request.user.UpdateUserRequest;
 

@@ -6,7 +6,7 @@ import com.hb.auth.exception.ConflictException;
 import com.hb.auth.exception.GoneException;
 import com.hb.auth.exception.NotFoundException;
 import com.hb.auth.mapper.UserMapper;
-import com.hb.auth.model.User;
+import com.hb.auth.model.postgres.User;
 import com.hb.auth.payload.request.user.CreateUserRequest;
 import com.hb.auth.payload.request.user.UpdateUserRequest;
 import com.hb.auth.payload.response.PageResponse;

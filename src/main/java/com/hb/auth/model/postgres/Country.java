@@ -1,4 +1,4 @@
-package com.hb.auth.model;
+package com.hb.auth.model.postgres;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,8 +24,16 @@ import lombok.NoArgsConstructor;
 @Data
 public class Country{
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        Integer id;
+        @SequenceGenerator(
+                name = "country_sequence",
+                sequenceName = "country_sequence",
+                allocationSize = 1
+        )
+        @GeneratedValue(
+                strategy = GenerationType.SEQUENCE,
+                generator = "country_sequence"
+        )
+        Long id;
         String name;
         String emoji;
         String currency;

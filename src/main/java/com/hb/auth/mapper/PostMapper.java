@@ -1,6 +1,6 @@
 package com.hb.auth.mapper;
 
-import com.hb.auth.model.Post;
+import com.hb.auth.model.postgres.Post;
 import com.hb.auth.payload.request.post.CreatePostRequest;
 import com.hb.auth.payload.response.post.PostResponse;
 import org.mapstruct.Mapper;

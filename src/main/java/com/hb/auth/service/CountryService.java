@@ -1,6 +1,6 @@
 package com.hb.auth.service;
 
-import com.hb.auth.model.Country;
+import com.hb.auth.model.postgres.Country;
 import org.springframework.graphql.client.HttpGraphQlClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

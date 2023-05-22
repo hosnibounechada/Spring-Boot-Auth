@@ -1,6 +1,6 @@
 package com.hb.auth.repository;
 
-import com.hb.auth.model.Role;
+import com.hb.auth.model.postgres.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
