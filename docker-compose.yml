@@ -1,4 +1,16 @@
 services:
+  application:
+    container_name: app
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+      - 8085:8085
+    depends_on:
+      - mongodb
+      - minio
+      - postgres
+      - redis
   minio:
     image: quay.io/minio/minio
     container_name: minio
