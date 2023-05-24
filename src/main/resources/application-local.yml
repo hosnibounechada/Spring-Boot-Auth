@@ -1,0 +1,84 @@
+apiPrefix: /api/v1
+file:
+    upload:
+        max-size: 1048576
+minio:
+    accessKey: lbwq4WPyg69EBuRh
+    bucket: spring-profile-bucket
+    secretKey: wxMYVsGCzINFjTeRLI7J7owyfaI7xYK1
+#    url: http://minio:9000
+    url: http://localhost:9000
+server:
+    error:
+        include-message: always
+    port: 8080
+socket-server:
+    host: 127.0.0.1
+    port: 8085
+spring:
+    data:
+        mongodb:
+            authentication-database: admin
+            auto-index-creation: true
+            database: auth
+#            host: mongodb
+            host: localhost
+            password: password
+            port: 27017
+            username: mongo
+        redis:
+#            host: redis
+            host: localhost
+            port: 6379
+    datasource:
+        driverClassName: org.h2.Driver
+        password: password
+        url: jdbc:h2:mem:testdb
+        username: sa
+    flyway:
+        enabled: false
+    h2:
+        console:
+            enabled: true
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        hibernate:
+            ddl-auto: create-drop
+        properties:
+            hibernate:
+                format_sql: true
+        show-sql: true
+    mail:
+        host: smtp.gmail.com
+        password: rnwdfsagqpdggwik
+        port: 465
+        properties:
+            mail:
+                smtps:
+                    auth: true
+                    ssl:
+                        checkserveridentity: true
+                        trust: smtp.gmail.com
+                    starttls:
+                        enable: true
+        protocol: smtps
+        username: hosniboun@gmail.com
+    main:
+        web-application-type: servlet
+    servlet:
+        multipart:
+            max-file-size: 5MB
+springdoc:
+    api-docs:
+        path: /api-docs
+    swagger-ui:
+        path: /swagger-ui.html
+twilio:
+    account:
+        sid: AC3f09f0f73c640e9f03e98e6d4f3ae0fd
+    auth:
+        token: 1af7c3af4ab4c81344abd9126fc04801
+    phone:
+        number: 213666479862
+    service:
+        sid: VA2ef474cf2ad41c01b9fba2249a7ca7ff
