@@ -1,56 +1,49 @@
 apiPrefix: /api/v1
+server:
+    port: ${SERVER_PORT:8080}
+    error:
+        include-message: always
+socket-server:
+    host: ${SOCKET_SERVER_HOST:127.0.0.1}
+    port: ${SOCKET_SERVER_PORT:8085}
 file:
     upload:
         max-size: 1048576
-minio:
-    accessKey: lbwq4WPyg69EBuRh
-    bucket: spring-profile-bucket
-    secretKey: wxMYVsGCzINFjTeRLI7J7owyfaI7xYK1
-#    url: http://minio:9000
-    url: http://localhost:9000
-server:
-    error:
-        include-message: always
-    port: 8080
-socket-server:
-    host: 127.0.0.1
-    port: 8085
 spring:
-    data:
-        mongodb:
-            authentication-database: admin
-            auto-index-creation: true
-            database: auth
-#            host: mongodb
-            host: localhost
-            password: password
-            port: 27017
-            username: mongo
-        redis:
-#            host: redis
-            host: localhost
-            port: 6379
     datasource:
         driverClassName: org.h2.Driver
-        password: password
         url: jdbc:h2:mem:testdb
         username: sa
-    flyway:
-        enabled: false
-    h2:
-        console:
-            enabled: true
+        password:
+    data:
+        mongodb:
+            authentication-database: ${SPRING_DATA_MONGODB_AUTHENTICATIONDATABASE:admin}
+            auto-index-creation: ${SPRING_DATA_MONGODB_AUTOINDEXCREATION:true}
+            database: ${SPRING_DATA_MONGODB_DATABASE:auth}
+            host: ${SPRING_DATA_MONGODB_HOST:localhost}
+            password: ${SPRING_DATA_MONGODB_PASSWORD:password}
+            port: ${SPRING_DATA_MONGODB_PORT:27017}
+            username: ${SPRING_DATA_MONGODB_USERNAME:mongo}
+        redis:
+            host: ${SPRING_DATA_REDIS_HOST:localhost}
+            port: ${SPRING_DATA_REDIS_PORT:6379}
     jpa:
         database-platform: org.hibernate.dialect.H2Dialect
         hibernate:
             ddl-auto: create-drop
         properties:
             hibernate:
+                dialect: org.hibernate.dialect.H2Dialect
                 format_sql: true
         show-sql: true
+    flyway:
+        enabled: false
+    h2:
+        console:
+            enabled: true
     mail:
         host: smtp.gmail.com
-        password: rnwdfsagqpdggwik
+        password: ${SPRING_MAIL_PASSWORD:rnwdfsagqpdggwik}
         port: 465
         properties:
             mail:
@@ -62,9 +55,11 @@ spring:
                     starttls:
                         enable: true
         protocol: smtps
-        username: hosniboun@gmail.com
+        username: ${SPRING_MAIL_USERNAME:hosniboun@gmail.com}
     main:
         web-application-type: servlet
+    mvc:
+        static-path-pattern: /site/**
     servlet:
         multipart:
             max-file-size: 5MB
@@ -73,12 +68,17 @@ springdoc:
         path: /api-docs
     swagger-ui:
         path: /swagger-ui.html
+minio:
+    accessKey: ${MINIO_ACCESSKEY:lbwq4WPyg69EBuRh}
+    bucket: ${MINIO_BUCKET:spring-profile-bucket}
+    secretKey: ${MINIO_SECRETKEY:wxMYVsGCzINFjTeRLI7J7owyfaI7xYK1}
+    url: ${MINIO_URL:http://localhost:9000}
 twilio:
     account:
-        sid: AC3f09f0f73c640e9f03e98e6d4f3ae0fd
+        sid: ${TWILIO_ACCOUNT_SID:AC3f09f0f73c640e9f03e98e6d4f3ae0fd}
     auth:
-        token: 1af7c3af4ab4c81344abd9126fc04801
+        token: ${TWILIO_AUTH_TOKEN:1af7c3af4ab4c81344abd9126fc04801}
     phone:
-        number: 213666479862
+        number: ${TWILIO_PHONE_NUMBER:213666479862}
     service:
-        sid: VA2ef474cf2ad41c01b9fba2249a7ca7ff
+        sid: ${TWILIO_SERVICE_SID:VA2ef474cf2ad41c01b9fba2249a7ca7ff}
