@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class LoadMonoDB implements CommandLineRunner {
+public class LoadMongoDB implements CommandLineRunner {
     private final ProductRepository productRepository;
     @Override
     public void run(String... args) {

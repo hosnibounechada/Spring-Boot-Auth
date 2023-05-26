@@ -1,0 +1,32 @@
+type Mutation {
+    createBook(title: String, pages: Int, author: String): Book
+    addBook(book: BookInput!): Book
+    updateBook(id: ID!, book: BookInput!): Book
+    deleteBook(id: ID!): Book
+}
+
+type Query {
+    findAllBooks: [Book]
+    findBook(id: ID!): Book
+}
+
+type Book {
+    id: ID!
+    title: String
+    pages: Int
+    author: String
+    reviews: [Review]
+}
+
+type Review {
+    id: ID!
+    title: String
+    comment: String
+    book: Book
+}
+
+input BookInput {
+    title: String
+    pages: Int
+    author: String
+}

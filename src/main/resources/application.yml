@@ -8,6 +8,9 @@ spring:
     servlet:
         multipart:
             max-file-size: 5MB
+    graphql:
+      graphiql:
+          enabled: true
 apiPrefix: /api/v1
 springdoc:
     api-docs:

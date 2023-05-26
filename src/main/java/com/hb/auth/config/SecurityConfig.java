@@ -46,6 +46,8 @@ public class SecurityConfig {
                 AntPathRequestMatcher.antMatcher("/"),
                 AntPathRequestMatcher.antMatcher("/site/**"),
                 AntPathRequestMatcher.antMatcher("/h2-console/**"),
+                AntPathRequestMatcher.antMatcher("/graphql/**"),
+                AntPathRequestMatcher.antMatcher("/graphiql/**"),
                 AntPathRequestMatcher.antMatcher("/swagger-ui/**"),
                 AntPathRequestMatcher.antMatcher("/api-docs/**"),
                 AntPathRequestMatcher.antMatcher(API_PREFIX +"/confirmation/**"),
