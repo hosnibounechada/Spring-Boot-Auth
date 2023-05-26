@@ -15,11 +15,11 @@ spring:
         mongodb:
             authentication-database: admin
             auto-index-creation: true
-            database: auth
             host: localhost
-            password: password
             port: 27017
+            database: auth
             username: mongo
+            password: password
         redis:
             host: localhost
             port: 6379
@@ -37,6 +37,8 @@ spring:
     h2:
         console:
             enabled: true
+            settings:
+                web-allow-others: true
     mail:
         host: smtp.gmail.com
         password: rnwdfsagqpdggwik

@@ -8,9 +8,9 @@ socket-server:
 spring:
     datasource:
         driverClassName: org.postgresql.Driver
-        url: ${SPRING_DATASOURCE_POSTGRES_URL:jdbc:postgresql://localhost:5432/auth}
-        username: ${SPRING_DATASOURCE_POSTGRES_USERNAME:postgres}
-        password: ${SPRING_DATASOURCE_POSTGRES_PASSWORD:password}
+        url: jdbc:postgresql://localhost:5432/auth
+        username: postgres
+        password: password
     data:
         mongodb:
             authentication-database: admin
@@ -28,8 +28,8 @@ spring:
         baseline-on-migrate: true
         baseline-version: 1
         enabled: true
-        user: ${SPRING_DATASOURCE_POSTGRES_USERNAME:postgres}
-        password: ${SPRING_DATASOURCE_POSTGRES_PASSWORD:password}
+        user: postgres
+        password: password
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         hibernate:
