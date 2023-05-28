@@ -38,18 +38,11 @@ services:
       - redis:/data
   mongodb:
     image: mongo
-    container_name: mongo_db
+    container_name: mongodb
     ports:
       - 27017:27017
     volumes:
       - mongo:/data
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
-    depends_on:
-      - mongodb
-    ports:
-      - 8081:8081
 volumes:
   postgres: {}
   redis: {}
