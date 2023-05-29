@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.hb.auth.util.PaginationUtils.generatePageableResponse;
@@ -85,15 +84,11 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
 
     @Override
     public UserResponse update(Long id, UpdateUserRequest request) {
-        Optional<User> existedUser = userRepository.findById(id);
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found!"));
 
-        if (existedUser.isEmpty()) throw new NotFoundException("User not found!");
+        UpdateObject.updateUserFields(request, user);
 
-        User updatedUser = existedUser.get();
-
-        UpdateObject.updateUserFields(request, updatedUser);
-
-        return userMapper.entityToResponse(userRepository.save(updatedUser));
+        return userMapper.entityToResponse(userRepository.save(user));
     }
 
     @Override

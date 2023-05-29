@@ -9,7 +9,6 @@ import com.hb.auth.service.UserService;
 import com.hb.auth.view.PostView;
 import com.hb.auth.view.UserViewImp;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import org.springframework.http.HttpStatus;
@@ -36,10 +35,9 @@ public class UserController {
 
     /**
      * Convert all QueryParams to lower case
-     *
      * @return String
      */
-    /*@InitBinder
+    /*&#064;InitBinder
     public void initBinder( WebDataBinder dataBinder )
     {
         StringLowerCaseEditor lowerCaseEditor = new StringLowerCaseEditor();
@@ -77,7 +75,6 @@ public class UserController {
     @PostMapping(consumes = {"application/json"})
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> create(@RequestBody CreateUserRequest request) {
-//        ObjectValidator.validate(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
@@ -89,10 +86,10 @@ public class UserController {
         return ResponseEntity.ok(userService.update(id, request));
     }
 
+
     @DeleteUserSwagger
     @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-//        userService.delete(id);
         userService.deleteById(id);
 
         return ResponseEntity.noContent().build();
