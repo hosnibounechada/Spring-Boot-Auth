@@ -3,6 +3,7 @@ package com.hb.auth.model.postgres;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class Role implements GrantedAuthority {
 
     @Id
