@@ -55,9 +55,9 @@ spring:
         protocol: smtps
         username: hosniboun@gmail.com
 minio:
-    accessKey: lbwq4WPyg69EBuRh
+    accessKey: I6qgqsiYOmOtsRUj
     bucket: spring-profile-bucket
-    secretKey: wxMYVsGCzINFjTeRLI7J7owyfaI7xYK1
+    secretKey: vB3MqoG1e3gXWWLUxrf8IPYVzp56RQBW
     url: http://localhost:9000
 twilio:
     account:

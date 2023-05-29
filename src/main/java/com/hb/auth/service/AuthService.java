@@ -27,12 +27,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.hb.auth.constant.RedisEmailConfirmationHash.*;
 import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
 import static com.hb.auth.util.NumberUtils.*;
-import static com.hb.auth.util.StringUtils.*;
-
+import static com.hb.auth.util.StringUtils.generateUsername;
 
 @Service
 @Transactional
@@ -52,27 +53,23 @@ public class AuthService {
 
         String encodedPassword = passwordEncoder.encode(password);
 
-        Optional<Role> userRole = roleRepository.findByAuthority("USER");
-
-        if (userRole.isEmpty()) throw new IllegalStateException("Role USER doesn't exist");
+        Role userRole = roleRepository.findByAuthority("USER").orElseThrow(() -> new NotFoundException("Role USER doesn't exist"));
 
         String username = generateUsername(firstName, lastName, NumberUtils::Generate4DigitsNumber);
 
-        Optional<User> user = userRepository.findByUsernameOrEmail(username, email);
+        boolean exist = userRepository.findByUsernameOrEmail(username, email).isPresent();
 
-        if (user.isPresent()) throw new ResourceAlreadyExistsException("User already exist");
+        if (exist) throw new ResourceAlreadyExistsException("User already exist");
 
-        Set<Role> authorities = new HashSet<>();
-
-        authorities.add(userRole.get());
+        Set<Role> authorities = Stream.of(userRole).collect(Collectors.toSet());
 
         User savedUser = userRepository.save(new User(firstName, lastName, age, username, email, encodedPassword, authorities));
 
         String confirmationCode = Generate6DigitsNumber().toString();
 
-        Map<String, String> map = Map.of(CODE,confirmationCode,COUNTER,"0");
+        Map<String, String> map = Map.of(CODE, confirmationCode, COUNTER, "0");
 
-        redisService.createHashWithTtl(email,map,350L);
+        redisService.createHashWithTtl(email, map, 350L);
 
         mailService.sendMailAsync(MailTemplate.accountConfirmationMail(email, confirmationCode));
 
@@ -81,9 +78,7 @@ public class AuthService {
 
     public LoginResponse loginUser(String username, String password, HttpServletResponse response) {
         try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             String jwt = tokenService.generateJwt(auth);
 
@@ -92,7 +87,6 @@ public class AuthService {
             UserResponse userResponse = userMapper.entityToResponse(user);
 
             assignJwtToCookie(jwt, response);
-
 
             return new LoginResponse(userResponse, jwt);
 
@@ -105,9 +99,9 @@ public class AuthService {
 
         Map<String, String> map = redisService.getFieldValuesAndIncrement(email);
 
-        if(map == null) throw new NotFoundException("Invalid code or Already expired");
+        if (map == null) throw new NotFoundException("Invalid code or Already expired");
 
-        if(!map.get(CODE).equals(code)) throw new NotFoundException("Incorrect code");
+        if (!map.get(CODE).equals(code)) throw new NotFoundException("Incorrect code");
 
         // validate in the database*/
 
@@ -119,19 +113,15 @@ public class AuthService {
     }
 
     public Boolean verifyOTP(Long id, String phone, String otp) {
-        boolean result =  twilioService.verifyOTP(phone, otp);
+        boolean result = twilioService.verifyOTP(phone, otp);
 
-        if(!result) throw new NotFoundException("Operation doesn't Complete");
+        if (!result) throw new NotFoundException("Operation doesn't Complete");
 
-        Optional<User> user = userRepository.findById(id);
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
 
-        if(user.isEmpty()) throw new NotFoundException("User not found");
+        user.setPhone(phone);
 
-        User updatedUser = user.get();
-
-        updatedUser.setPhone(phone);
-
-        userRepository.save(updatedUser);
+        userRepository.save(user);
 
         return true;
     }
