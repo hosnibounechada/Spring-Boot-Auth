@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<UserView> getUserByFirstNameOrLastNameOrderByFirstNameAscLastNameAsc(String firstName, String lastName);
     Page<UserViewImp> getUserByFirstNameOrLastName(String firstName, String lastName, Pageable pageable);
+
+    boolean existsByEmail(String email);
 }

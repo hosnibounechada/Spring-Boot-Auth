@@ -3,6 +3,7 @@ package com.hb.auth.controller;
 import com.hb.auth.annotation.swagger.auth.*;
 import com.hb.auth.payload.request.auth.*;
 import com.hb.auth.payload.request.auth.LoginRequest;
+import com.hb.auth.payload.response.auth.EmailAvailabilityResponse;
 import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.service.AuthService;
@@ -64,5 +65,11 @@ public class AuthController {
     @PostMapping("/verifyOTP")
     public ResponseEntity<Boolean> verifyPhoneOTP(@RequestBody VerifyPhoneRequest body, Principal principal) {
         return ResponseEntity.ok(authService.verifyOTP(Long.parseLong(principal.getName()), body.phone(), body.otp()));
+    }
+
+    @LoginSwagger
+    @PostMapping("/email")
+    public ResponseEntity<EmailAvailabilityResponse> emailAvailability(@RequestBody EmailAvailabilityRequest body) {
+        return ResponseEntity.ok(authService.emailAvailability(body.email()));
     }
 }

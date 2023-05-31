@@ -10,6 +10,7 @@ import com.hb.auth.exception.ResourceAlreadyExistsException;
 import com.hb.auth.mapper.UserMapper;
 import com.hb.auth.model.postgres.Role;
 import com.hb.auth.model.postgres.User;
+import com.hb.auth.payload.response.auth.EmailAvailabilityResponse;
 import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.RoleRepository;
@@ -124,5 +125,10 @@ public class AuthService {
         userRepository.save(user);
 
         return true;
+    }
+
+    public EmailAvailabilityResponse emailAvailability(String email){
+        boolean exist = userRepository.existsByEmail(email);
+        return new EmailAvailabilityResponse(!exist);
     }
 }
