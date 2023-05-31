@@ -129,6 +129,9 @@ public class AuthService {
 
     public EmailAvailabilityResponse emailAvailability(String email){
         boolean exist = userRepository.existsByEmail(email);
-        return new EmailAvailabilityResponse(!exist);
+
+        if(exist) throw new ResourceAlreadyExistsException("Email Already exists");
+
+        return new EmailAvailabilityResponse(true);
     }
 }
