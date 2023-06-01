@@ -50,7 +50,7 @@ public interface User {
     @Constraint(validatedBy = {})
     @Documented
     @NotBlank(message = "Username is required")
-    @Pattern(regexp = "^[a-zA-Z0-9_-]{3,16}$", message = "Username must be 3-16 characters long and can only contain letters, numbers, underscores, and hyphens")
+    @Pattern(regexp = "^[a-zA-Z0-9_-]{10,64}$", message = "Username must be 10-64 characters long and can only contain letters, numbers, underscores, and hyphens")
     @interface Username {
         String message() default "Invalid username";
         Class<?>[] groups() default {};

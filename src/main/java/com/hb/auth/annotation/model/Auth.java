@@ -2,11 +2,23 @@ package com.hb.auth.annotation.model;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 import java.lang.annotation.*;
 
 public interface Auth {
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @Constraint(validatedBy = {})
+    @Documented
+    @NotBlank(message = "Username or Email is required")
+    @Size(min = 10, max = 128, message = "Must be Username or Email between 10 to 128 characters")
+    @interface UsernameOrEmail {
+        String message() default "Invalid username";
+        Class<?>[] groups() default {};
+        Class<? extends Payload>[] payload() default {};
+    }
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     @Constraint(validatedBy = {})
