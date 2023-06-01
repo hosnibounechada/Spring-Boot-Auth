@@ -67,7 +67,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyOTP(Long.parseLong(principal.getName()), body.phone(), body.otp()));
     }
 
-    @LoginSwagger
+    @EmailAvailabilitySwagger
     @PostMapping("/email")
     public ResponseEntity<EmailAvailabilityResponse> emailAvailability(@RequestBody EmailAvailabilityRequest body) {
         return ResponseEntity.ok(authService.emailAvailability(body.email()));
