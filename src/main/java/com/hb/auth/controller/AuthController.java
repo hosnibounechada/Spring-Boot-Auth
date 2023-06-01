@@ -72,4 +72,9 @@ public class AuthController {
     public ResponseEntity<EmailAvailabilityResponse> emailAvailability(@RequestBody EmailAvailabilityRequest body) {
         return ResponseEntity.ok(authService.emailAvailability(body.email()));
     }
+    @LoginSwagger
+    @PostMapping("/me")
+    public ResponseEntity<LoginResponse> me() {
+        return ResponseEntity.ok(authService.me());
+    }
 }

@@ -134,4 +134,8 @@ public class AuthService {
 
         return new EmailAvailabilityResponse(true);
     }
+
+    public LoginResponse me(){
+        return null;
+    }
 }
