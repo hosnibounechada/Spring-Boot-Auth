@@ -15,6 +15,7 @@ import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
+import com.hb.auth.security.jwt.JwtUtils;
 import com.hb.auth.security.service.TokenService;
 import com.hb.auth.util.NumberUtils;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,6 +51,8 @@ public class AuthService {
     private final RedisService redisService;
     private final TwilioService twilioService;
 
+    private final JwtUtils jwtUtils;
+
     public UserResponse registerUser(String firstName, String lastName, int age, String email, String password) {
 
         String encodedPassword = passwordEncoder.encode(password);
@@ -81,15 +84,19 @@ public class AuthService {
         try {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-            String jwt = tokenService.generateJwt(auth);
-
             User user = (User) auth.getPrincipal();
+            // Asymmetric RSA
+            // String jwt = tokenService.generateJwt(auth);
+            // Symmetric
+            String accessToken = jwtUtils.generateJwtToken(auth, true);
 
             UserResponse userResponse = userMapper.entityToResponse(user);
 
-            assignJwtToCookie(jwt, response);
+            String refreshToken = jwtUtils.generateJwtToken(auth, false);
 
-            return new LoginResponse(userResponse, jwt);
+            assignJwtToCookie(refreshToken, response);
+
+            return new LoginResponse(userResponse, accessToken);
 
         } catch (AuthenticationException e) {
             throw new InvalidCredentialsException("Invalid Credentials, Username or Password is wrong");

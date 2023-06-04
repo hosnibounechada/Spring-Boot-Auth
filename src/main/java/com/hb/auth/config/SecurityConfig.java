@@ -1,5 +1,7 @@
 package com.hb.auth.config;
 
+import com.hb.auth.security.jwt.AuthTokenFilter;
+import com.hb.auth.security.service.UserServiceImp;
 import com.hb.auth.security.util.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -12,12 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -27,6 +28,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -37,6 +39,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final RSAKeyProperties keys;
+    // Test code
+    private final AuthTokenFilter authTokenFilter;
+    private final UserServiceImp userDetailsService;
+    // End test
 
     @Value("${apiPrefix}")
     private String API_PREFIX;
@@ -61,13 +67,33 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+    /*@Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+
         return new ProviderManager(daoAuthenticationProvider);
+    }*/
+
+    // !!! Test code
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+    // End test
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -79,8 +105,13 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/admin/**")).hasRole("ADMIN")
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/user/**")).hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+                );
+//                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter()); // Real Code
+        // Test Code
+        http
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        // end Test
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -98,17 +129,24 @@ public class SecurityConfig {
                 .Builder(keys.getPublicKey())
                 .privateKey(keys.getPrivateKey())
                 .build();
+
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+
         return new NimbusJwtEncoder(jwks);
     }
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+
         jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
         return jwtConverter;
     }
 
