@@ -44,7 +44,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest body, HttpServletResponse response) {
         LoginResponse loginResponse = authService.loginUser(body.username(), body.password(), response);
 
-        if (loginResponse.userResponse() != null) assignJwtToCookie(loginResponse.jwt(), response);
+        //if (loginResponse.userResponse() != null) assignJwtToCookie(loginResponse.jwt(), response);
 
         return ResponseEntity.ok(loginResponse);
     }
@@ -76,5 +76,9 @@ public class AuthController {
     @PostMapping("/me")
     public ResponseEntity<LoginResponse> me() {
         return ResponseEntity.ok(authService.me());
+    }
+    @GetMapping("/refresh")
+    public ResponseEntity<String> refresh(@RequestAttribute("jwtToken") String token) {
+        return ResponseEntity.ok(token);
     }
 }
