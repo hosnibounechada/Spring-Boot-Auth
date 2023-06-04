@@ -36,7 +36,7 @@ public class Post {
             columnDefinition = "TEXT"
     )
     private String content;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "posts_user_id_fkey"))
