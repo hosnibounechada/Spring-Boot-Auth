@@ -1,5 +1,6 @@
 package com.hb.auth.security.jwt;
 
+import com.hb.auth.constant.Token;
 import com.hb.auth.model.postgres.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -11,9 +12,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -26,49 +29,66 @@ public class JwtUtils {
     private String refreshJwtSecret;
     @Value("${jwt.refresh.duration}")
     private int refreshExpiresAfter;
+
+    private static final String UNKNOWN_TOKEN_TYPE_MESSAGE = "Unknown token type";
     private Key getJwtSecretKey(String secretKey){
         return Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
     }
 
-    public String generateJwtToken(Authentication auth, boolean isAccessToken) {
+    public String generateJwtToken(Authentication auth, Token tokenType) {
 
-        String jwtSecret = isAccessToken ? accessJwtSecret : refreshJwtSecret;
-        int expiresAfter = isAccessToken ? accessExpiresAfter : refreshExpiresAfter;
+        String jwtSecret;
+        int expiresAfter;
+        switch (tokenType){
+            case ACCESS_TOKEN -> {
+                jwtSecret = accessJwtSecret;
+                expiresAfter = accessExpiresAfter;
+            }
+            case REFRESH_TOKEN -> {
+                jwtSecret = refreshJwtSecret;
+                expiresAfter = refreshExpiresAfter;
+            }
+            default -> throw new IllegalArgumentException(UNKNOWN_TOKEN_TYPE_MESSAGE);
+        }
 
         User user = (User) auth.getPrincipal();
 
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-        Map<String, Object> extraClaims = new HashMap<>() {
-            {
-                put("i", user.getId());
-                put("u", user.getUsername());
-                put("e", user.getEmail());
-                put("r", roles);
-            }
-        };
+                .toList();
+
+        Map<String, Object> extraClaims = Map.of(
+                "i", user.getId(),
+                "u", user.getUsername(),
+                "e", user.getEmail(),
+                "r", roles
+        );
 
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + expiresAfter))
+                .setExpiration(Date.from(Instant.now().plus(Duration.of(expiresAfter, ChronoUnit.MINUTES))))
                 .signWith(getJwtSecretKey(jwtSecret))
                 .compact();
     }
 
-    public String getUserNameFromJwtToken(String token) {
-        return getClaim(token, Claims::getSubject);
+    public String getUserNameFromJwtToken(String token, Token tokenType) {
+        return getClaim(token, Claims::getSubject, tokenType);
     }
 
-    public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaims(token, true);
+    public <T> T getClaim(String token, Function<Claims, T> claimsResolver, Token tokenType) {
+        final Claims claims = getAllClaims(token, tokenType);
         return claimsResolver.apply(claims);
     }
 
-    public Claims getAllClaims(String token, boolean isAccessToken){
-        String jwtSecret = isAccessToken ? accessJwtSecret : refreshJwtSecret;
+    public Claims getAllClaims(String token, Token tokenType){
+        String jwtSecret;
+        switch (tokenType){
+            case ACCESS_TOKEN -> jwtSecret = accessJwtSecret;
+            case REFRESH_TOKEN -> jwtSecret = refreshJwtSecret;
+            default -> throw new IllegalArgumentException(UNKNOWN_TOKEN_TYPE_MESSAGE);
+        }
 
         return Jwts.parserBuilder()
                 .setSigningKey(getJwtSecretKey(jwtSecret))
@@ -76,12 +96,18 @@ public class JwtUtils {
                 .parseClaimsJws(token)
                 .getBody();
     }
-    public boolean validateJwtToken(String jwt, boolean isAccessToken) {
-        String jwtSecret = isAccessToken ? accessJwtSecret : refreshJwtSecret;
+    public boolean validateJwtToken(String jwt, Token tokenType) {
+        String jwtSecret;
+
+        switch (tokenType){
+            case ACCESS_TOKEN -> jwtSecret = accessJwtSecret;
+            case REFRESH_TOKEN -> jwtSecret = refreshJwtSecret;
+            default -> throw new IllegalArgumentException(UNKNOWN_TOKEN_TYPE_MESSAGE);
+        }
+
         try {
-            getClaim(jwt, Claims::getExpiration);
+            getClaim(jwt, Claims::getExpiration, tokenType);
             Jwts.parserBuilder().setSigningKey(getJwtSecretKey(jwtSecret)).build().parseClaimsJws(jwt);
-            return true;
         } catch (SignatureException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
@@ -93,6 +119,6 @@ public class JwtUtils {
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
-        return false;
+        return true;
     }
 }

@@ -1,23 +1,23 @@
 package com.hb.auth.mapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public interface GenericMapper<ENTITY , REQUEST, RESPONSE> {
-    ENTITY requestToEntity(REQUEST request);
+public interface GenericMapper<E , Q, R> {
+    E requestToEntity(Q request);
 
-    RESPONSE entityToResponse(ENTITY entity);
+    R entityToResponse(E entity);
 
-    default List<RESPONSE> entitiesToResponses(Collection<ENTITY> entities){
-        if(entities == null) return null;
+    default List<R> entitiesToResponses(Collection<E> entities){
+        if(entities == null) return Collections.emptyList();
 
-        return entities.stream().map(this::entityToResponse).collect(Collectors.toList());
+        return entities.stream().map(this::entityToResponse).toList();
     }
 
-    default List<ENTITY> requestsToEntities(Collection<REQUEST> views){
-        if(views == null) return null;
+    default List<E> requestsToEntities(Collection<Q> views){
+        if(views == null) return Collections.emptyList();
 
-        return views.stream().map(this::requestToEntity).collect(Collectors.toList());
+        return views.stream().map(this::requestToEntity).toList();
     }
 }

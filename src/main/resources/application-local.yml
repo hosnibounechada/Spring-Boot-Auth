@@ -71,8 +71,8 @@ twilio:
 jwt:
     access:
         key: 2B4B6250655368566D597133743677397A244226452948404D635166546A576E
-        duration: 60000
+        duration: 2
     refresh:
         key: 3272357538782F413F4428472B4B6250655368566D5970337336763979244226
-        duration: 259200000
+        duration: 1440
 

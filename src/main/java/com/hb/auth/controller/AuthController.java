@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
-
 @RestController
 @RequestMapping("${apiPrefix}/auth")
 @AuthControllerSwagger
@@ -43,8 +41,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest body, HttpServletResponse response) {
         LoginResponse loginResponse = authService.loginUser(body.username(), body.password(), response);
-
-        //if (loginResponse.userResponse() != null) assignJwtToCookie(loginResponse.jwt(), response);
 
         return ResponseEntity.ok(loginResponse);
     }

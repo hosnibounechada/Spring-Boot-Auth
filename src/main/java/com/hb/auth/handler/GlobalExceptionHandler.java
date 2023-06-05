@@ -7,6 +7,7 @@ import com.hb.auth.exception.*;
 import com.hb.auth.payload.response.BadRequestErrorResponse;
 import com.twilio.exception.ApiException;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.hb.auth.util.StringUtils.*;
 
@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .map(err -> new ErrorModel(toSnakeCase(err.getField()), err.getRejectedValue() == null ? "" : err.getRejectedValue().toString(), err.getDefaultMessage()))
-                .collect(Collectors.toList());
+                .toList();
 
         return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
     }

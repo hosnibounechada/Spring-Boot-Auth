@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class CountriesLoader implements CommandLineRunner {
     private final CountryService countryService;

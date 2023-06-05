@@ -58,7 +58,6 @@ public class PostController implements IController<Long, CreatePostRequest, Upda
     @DeleteMapping("/{id}")
     @DeletePostSwagger
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-//        postService.delete(id);
         postService.deleteById(id);
 
         return ResponseEntity.noContent().build();

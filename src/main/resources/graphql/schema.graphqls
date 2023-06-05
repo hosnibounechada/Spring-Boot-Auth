@@ -8,6 +8,7 @@ type Mutation {
 type Query {
     findAllBooks: [Book]
     findBook(id: ID!): Book
+    countries: [Country!]!
 }
 
 type Book {
@@ -29,4 +30,12 @@ input BookInput {
     title: String
     pages: Int
     author: String
+}
+
+type Country {
+    name: String!
+    emoji: String!
+    currency: String!
+    code: String!
+    capital: String!
 }

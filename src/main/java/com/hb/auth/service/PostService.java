@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
     public PageResponse<PostResponse> getAll() {
         List<Post> users = postRepository.findAll();
 
-        List<PostResponse> postsList = users.stream().map(postMapper::entityToResponse).collect(Collectors.toList());
+        List<PostResponse> postsList = users.stream().map(postMapper::entityToResponse).toList();
 
         int count = postsList.size();
 
@@ -82,7 +81,6 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
         return postMapper.entityToResponse(postRepository.save(updatedPost));
     }
 
-    @Deprecated
     @Override
     public void deleteById(Long id) {
         if (!postRepository.existsById(id)) throw new NotFoundException("Post already deleted!");

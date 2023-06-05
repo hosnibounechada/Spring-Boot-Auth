@@ -16,7 +16,6 @@ import com.hb.auth.payload.response.user.UserResponse;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
 import com.hb.auth.security.jwt.JwtUtils;
-import com.hb.auth.security.service.TokenService;
 import com.hb.auth.util.NumberUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.hb.auth.constant.RedisEmailConfirmationHash.*;
+import static com.hb.auth.constant.Token.ACCESS_TOKEN;
+import static com.hb.auth.constant.Token.REFRESH_TOKEN;
 import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
 import static com.hb.auth.util.NumberUtils.*;
 import static com.hb.auth.util.StringUtils.generateUsername;
@@ -46,7 +47,6 @@ public class AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
     private final MailService mailService;
     private final RedisService redisService;
     private final TwilioService twilioService;
@@ -85,14 +85,12 @@ public class AuthService {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             User user = (User) auth.getPrincipal();
-            // Asymmetric RSA
-            // String jwt = tokenService.generateJwt(auth);
-            // Symmetric
-            String accessToken = jwtUtils.generateJwtToken(auth, true);
+
+            String accessToken = jwtUtils.generateJwtToken(auth, ACCESS_TOKEN); // For Asymmetric use this instead: String jwt = tokenService.generateJwt(auth)
 
             UserResponse userResponse = userMapper.entityToResponse(user);
 
-            String refreshToken = jwtUtils.generateJwtToken(auth, false);
+            String refreshToken = jwtUtils.generateJwtToken(auth, REFRESH_TOKEN);
 
             assignJwtToCookie(refreshToken, response);
 

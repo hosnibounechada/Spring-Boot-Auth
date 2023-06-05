@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class LoadGraphQL implements CommandLineRunner {
     private final BookRepository bookRepository;

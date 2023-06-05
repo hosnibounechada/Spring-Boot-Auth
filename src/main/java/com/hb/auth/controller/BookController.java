@@ -1,5 +1,6 @@
 package com.hb.auth.controller;
 
+import com.hb.auth.exception.NotFoundException;
 import com.hb.auth.model.postgres.Book;
 import com.hb.auth.payload.request.book.BookInput;
 import com.hb.auth.repository.BookRepository;
@@ -41,7 +42,7 @@ public class BookController {
     public Book updateBook(@Argument Long id, @Argument BookInput book) {
         Book bookToUpdate = bookRepository.findById(id).orElse(null);
         if (bookToUpdate == null) {
-            throw new RuntimeException("Book not found");
+            throw new NotFoundException("Book not found");
         }
         bookToUpdate.setTitle(book.title());
         bookToUpdate.setPages(book.pages());

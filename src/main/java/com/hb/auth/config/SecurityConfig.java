@@ -1,5 +1,6 @@
 package com.hb.auth.config;
 
+import com.hb.auth.security.jwt.AuthEntryPointJwt;
 import com.hb.auth.security.jwt.AuthTokenFilter;
 import com.hb.auth.security.service.UserServiceImp;
 import com.hb.auth.security.util.RSAKeyProperties;
@@ -14,11 +15,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -40,6 +44,7 @@ import java.util.List;
 public class SecurityConfig {
     private final RSAKeyProperties keys;
     // Test code
+    private final AuthEntryPointJwt authEntryPointJwt;
     private final AuthTokenFilter authTokenFilter;
     private final UserServiceImp userDetailsService;
     // End test
@@ -67,8 +72,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /*@Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
+    @Bean
+    public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
@@ -76,24 +81,7 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return new ProviderManager(daoAuthenticationProvider);
-    }*/
-
-    // !!! Test code
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return authProvider;
     }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
-    // End test
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -106,12 +94,13 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/user/**")).hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 );
-//                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter()); // Real Code
+//                http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter()); // Real Code
         // Test Code
+//                    .exceptionHandling().authenticationEntryPoint(authEntryPointJwt);
         http
-                .authenticationProvider(authenticationProvider())
+                .authenticationManager(authenticationManager())
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
-        // end Test
+        // End Test
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
