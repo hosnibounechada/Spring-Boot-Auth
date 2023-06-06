@@ -6,6 +6,7 @@ import com.hb.auth.error.ErrorResponse;
 import com.hb.auth.exception.*;
 import com.hb.auth.payload.response.BadRequestErrorResponse;
 import com.twilio.exception.ApiException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.validation.ConstraintViolationException;

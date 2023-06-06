@@ -74,7 +74,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.me());
     }
     @GetMapping("/refresh")
-    public ResponseEntity<String> refresh(@RequestAttribute("jwtToken") String token) {
+    public ResponseEntity<String> refresh(@RequestAttribute("userId") Long userId, @RequestAttribute("jwtToken") String token) {
+        System.out.println("User ID: " + userId);
+        System.out.println("Token: " + token);
         return ResponseEntity.ok(token);
     }
 }

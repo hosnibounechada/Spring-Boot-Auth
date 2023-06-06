@@ -1,6 +1,5 @@
 package com.hb.auth.security.jwt;
 
-import com.hb.auth.exception.ExpiredTokenException;
 import com.hb.auth.model.postgres.Role;
 import com.hb.auth.model.postgres.User;
 import io.jsonwebtoken.Claims;
@@ -37,18 +36,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt, ACCESS_TOKEN);
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    Claims claims = jwtUtils.getAllClaims(jwt, ACCESS_TOKEN);
-
-                    User user = new User();
-                    user.setId( Long.parseLong(claims.get("i").toString()));
-                    user.setUsername(claims.get("u").toString());
-                    user.setEmail(claims.get("e").toString());
-
-                    user.setAuthorities(((List<String>) claims.get("r"))
-                            .stream()
-                            .map(Role::new)
-                            .collect(Collectors.toSet()));
-
+                    User user = jwtUtils.getUserFromJwt(jwt, ACCESS_TOKEN);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,null, user.getAuthorities());
 

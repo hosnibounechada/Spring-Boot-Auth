@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -31,6 +33,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -94,9 +97,12 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher(API_PREFIX + "/user/**")).hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 );
-//                http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter()); // Real Code
+
+        // http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter()); // Real Code
         // Test Code
-//                    .exceptionHandling().authenticationEntryPoint(authEntryPointJwt);
+        // http.exceptionHandling().authenticationEntryPoint(authEntryPointJwt);
+        http.exceptionHandling()
+                .authenticationEntryPoint(authEntryPointJwt);
         http
                 .authenticationManager(authenticationManager())
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -137,6 +143,20 @@ public class SecurityConfig {
         jwtConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
         return jwtConverter;
+    }
+
+
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+            // Create an appropriate response body
+            String responseBody = "{\"error\":\"Unauthorized\"}";
+
+            response.getWriter().write(responseBody);
+            response.getWriter().flush();
+        };
     }
 
 }

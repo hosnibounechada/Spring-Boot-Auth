@@ -1,15 +1,19 @@
 package com.hb.auth.security.jwt;
 
 import com.hb.auth.constant.Token;
+import com.hb.auth.model.postgres.Role;
 import com.hb.auth.model.postgres.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.time.Duration;
@@ -17,6 +21,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.hb.auth.constant.Token.ACCESS_TOKEN;
 
 @Component
 @Slf4j
@@ -120,5 +127,44 @@ public class JwtUtils {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
         return true;
+    }
+
+    public User getUserFromJwt(String token, Token tokenType){
+        Claims claims = getAllClaims(token, tokenType);
+
+        User user = new User();
+
+        user.setId( Long.parseLong(claims.get("i").toString()));
+        user.setUsername(claims.get("u").toString());
+        user.setEmail(claims.get("e").toString());
+
+        user.setAuthorities(((List<String>) claims.get("r"))
+                .stream()
+                .map(Role::new)
+                .collect(Collectors.toSet()));
+
+        return user;
+    }
+
+    public String parseJwt (HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")){
+            return headerAuth.substring(7);
+        }
+        return null;
+    }
+
+    public String parseJwtFromCookie(HttpServletRequest httpRequest){
+        Cookie[] cookies = httpRequest.getCookies();
+        String token = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("jwt")) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+        return token;
     }
 }
