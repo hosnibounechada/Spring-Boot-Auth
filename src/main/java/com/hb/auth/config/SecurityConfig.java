@@ -66,7 +66,8 @@ public class SecurityConfig {
                 AntPathRequestMatcher.antMatcher("/api-docs/**"),
                 AntPathRequestMatcher.antMatcher(API_PREFIX +"/confirmation/**"),
                 AntPathRequestMatcher.antMatcher(API_PREFIX + "/auth/**"),
-                AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**")
+                AntPathRequestMatcher.antMatcher(API_PREFIX + "/users/**"),
+                AntPathRequestMatcher.antMatcher(API_PREFIX + "/posts/**")
         ).toArray(new RequestMatcher[0]);
     }
 

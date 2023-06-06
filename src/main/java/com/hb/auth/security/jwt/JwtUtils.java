@@ -42,7 +42,7 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
     }
 
-    public String generateJwtToken(Authentication auth, Token tokenType) {
+    public String generateJwtToken(User user, Token tokenType) {
 
         String jwtSecret;
         int expiresAfter;
@@ -57,8 +57,6 @@ public class JwtUtils {
             }
             default -> throw new IllegalArgumentException(UNKNOWN_TOKEN_TYPE_MESSAGE);
         }
-
-        User user = (User) auth.getPrincipal();
 
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

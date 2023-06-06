@@ -6,9 +6,7 @@ import com.hb.auth.error.ErrorResponse;
 import com.hb.auth.exception.*;
 import com.hb.auth.payload.response.BadRequestErrorResponse;
 import com.twilio.exception.ApiException;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Hidden;
-import jakarta.mail.AuthenticationFailedException;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -186,5 +184,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BadRequestErrorResponse handleFileSizeLimitAndFileTypeExceptions(FileSizeLimitException e) {
         return new BadRequestErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString());
+    }
+
+    @ExceptionHandler(InvalidOrExpiredTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleException(InvalidOrExpiredTokenException e) {
+        return new ErrorResponse(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }

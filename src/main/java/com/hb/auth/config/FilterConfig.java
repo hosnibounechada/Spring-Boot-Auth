@@ -22,6 +22,7 @@ public class FilterConfig {
         registrationBean.setFilter(refreshEndpointFilter);
 
         registrationBean.addUrlPatterns(apiPrefix + "/auth/refresh");
+        registrationBean.addUrlPatterns(apiPrefix + "/auth/logout");
 
         return registrationBean;
     }

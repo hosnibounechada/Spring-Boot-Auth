@@ -13,7 +13,7 @@ import java.io.IOException;
 import static com.hb.auth.constant.Token.REFRESH_TOKEN;
 
 @Component
-@WebFilter(urlPatterns = "${apiPrefix}/auth/refresh")
+@WebFilter(urlPatterns = {"${apiPrefix}/auth/refresh", "${apiPrefix}/auth/logout"})
 @RequiredArgsConstructor
 public class RefreshEndpointFilter implements Filter {
 

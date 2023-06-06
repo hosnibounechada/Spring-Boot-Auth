@@ -31,7 +31,7 @@ public class AuthController {
 
     /*@RegisterSwagger
     @PostMapping(value = "/register", consumes = "application/json")
-    public RedirectView registerAndRedirect(@RequestBody RegisterRequest body*//*, RedirectAttributes attributes*//*) {
+    public RedirectView registerAndRedirect(@RequestBody RegisterRequest body, RedirectAttributes attributes) {
         authService.registerUser(body.firstName(), body.lastName(), body.age(), body.email(), body.password());
         //attributes.addAttribute("email", body.email());
         return new RedirectView("http://localhost:8080/api/v1/confirmation/email/"+body.email());
@@ -71,12 +71,19 @@ public class AuthController {
     @LoginSwagger
     @PostMapping("/me")
     public ResponseEntity<LoginResponse> me() {
+        authService.me();
+
         return ResponseEntity.ok(authService.me());
     }
     @GetMapping("/refresh")
     public ResponseEntity<String> refresh(@RequestAttribute("userId") Long userId, @RequestAttribute("jwtToken") String token) {
-        System.out.println("User ID: " + userId);
-        System.out.println("Token: " + token);
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(authService.refreshToken(userId, token));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestAttribute("userId") Long userId, @RequestAttribute("jwtToken") String token, HttpServletResponse response) {
+        authService.logout(userId, token, response);
+
+        return ResponseEntity.noContent().build();
     }
 }

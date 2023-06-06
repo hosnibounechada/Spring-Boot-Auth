@@ -104,11 +104,11 @@ public class User implements UserDetails {
     @OneToMany(
             mappedBy = "user",
             orphanRemoval = true,
-            cascade = CascadeType.ALL,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
             fetch = FetchType.LAZY
     )
     @ToString.Exclude
-    private Set<Post> posts;
+    private transient Set<Post> posts;
 
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
@@ -117,6 +117,15 @@ public class User implements UserDetails {
             inverseJoinColumns = {@JoinColumn(name="role_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "user_roles_role_id_fkey"))}
     )
     private Set<Role> authorities;
+
+    @OneToMany(
+            mappedBy = "user",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
+            fetch = FetchType.LAZY
+    )
+    @ToString.Exclude
+    private transient Set<Device> devices;
 
 
     public User(String firstName, String lastName, Integer age, String username, String email, String password) {

@@ -5,20 +5,24 @@ import com.hb.auth.common.service.RedisService;
 import com.hb.auth.common.service.TwilioService;
 import com.hb.auth.common.template.MailTemplate;
 import com.hb.auth.exception.InvalidCredentialsException;
+import com.hb.auth.exception.InvalidOrExpiredTokenException;
 import com.hb.auth.exception.NotFoundException;
 import com.hb.auth.exception.ResourceAlreadyExistsException;
 import com.hb.auth.mapper.UserMapper;
+import com.hb.auth.model.postgres.Device;
 import com.hb.auth.model.postgres.Role;
 import com.hb.auth.model.postgres.User;
 import com.hb.auth.payload.response.auth.EmailAvailabilityResponse;
 import com.hb.auth.payload.response.auth.LoginResponse;
 import com.hb.auth.payload.response.user.UserResponse;
+import com.hb.auth.repository.DeviceRepository;
 import com.hb.auth.repository.RoleRepository;
 import com.hb.auth.repository.UserRepository;
 import com.hb.auth.security.jwt.JwtUtils;
 import com.hb.auth.util.NumberUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,7 +39,8 @@ import java.util.stream.Stream;
 import static com.hb.auth.constant.RedisEmailConfirmationHash.*;
 import static com.hb.auth.constant.Token.ACCESS_TOKEN;
 import static com.hb.auth.constant.Token.REFRESH_TOKEN;
-import static com.hb.auth.util.JwtUtil.assignJwtToCookie;
+import static com.hb.auth.util.CookiesJwtUtility.assignJwtToCookies;
+import static com.hb.auth.util.CookiesJwtUtility.removeJwtFromCookies;
 import static com.hb.auth.util.NumberUtils.*;
 import static com.hb.auth.util.StringUtils.generateUsername;
 
@@ -42,8 +48,10 @@ import static com.hb.auth.util.StringUtils.generateUsername;
 @Transactional
 @RequiredArgsConstructor
 public class AuthService {
+    private final DeviceService deviceService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final DeviceRepository deviceRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -52,6 +60,9 @@ public class AuthService {
     private final TwilioService twilioService;
 
     private final JwtUtils jwtUtils;
+
+    @Value("${jwt.refresh.duration}")
+    private int refreshExpiresAfter;
 
     public UserResponse registerUser(String firstName, String lastName, int age, String email, String password) {
 
@@ -86,13 +97,19 @@ public class AuthService {
 
             User user = (User) auth.getPrincipal();
 
-            String accessToken = jwtUtils.generateJwtToken(auth, ACCESS_TOKEN); // For Asymmetric use this instead: String jwt = tokenService.generateJwt(auth)
+            String accessToken = jwtUtils.generateJwtToken(user, ACCESS_TOKEN); // For Asymmetric use this instead: String jwt = tokenService.generateJwt(auth)
 
             UserResponse userResponse = userMapper.entityToResponse(user);
 
-            String refreshToken = jwtUtils.generateJwtToken(auth, REFRESH_TOKEN);
+            String refreshToken = jwtUtils.generateJwtToken(user, REFRESH_TOKEN);
 
-            assignJwtToCookie(refreshToken, response);
+            assignJwtToCookies(refreshToken, response);
+
+            LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(refreshExpiresAfter);
+
+            String deviceName = "Browser";
+
+            deviceService.create(user, refreshToken, localDateTime, deviceName);
 
             return new LoginResponse(userResponse, accessToken);
 
@@ -132,15 +149,31 @@ public class AuthService {
         return true;
     }
 
-    public EmailAvailabilityResponse emailAvailability(String email){
+    public EmailAvailabilityResponse emailAvailability(String email) {
         boolean exist = userRepository.existsByEmail(email);
 
-        if(exist) throw new ResourceAlreadyExistsException("Email Already exists");
+        if (exist) throw new ResourceAlreadyExistsException("Email Already exists");
 
         return new EmailAvailabilityResponse(true);
     }
 
-    public LoginResponse me(){
+    public LoginResponse me() {
         return null;
+    }
+
+    public String refreshToken(Long userId, String token) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+
+        Device device = deviceRepository.findDeviceByUserIdAndRefreshToken(userId, token);
+
+        if (device == null || device.getExpiresAt().isBefore(LocalDateTime.now()))
+            throw new InvalidOrExpiredTokenException("Invalid or expired token");
+
+        return jwtUtils.generateJwtToken(user, ACCESS_TOKEN);
+    }
+
+    public void logout(Long userId, String token, HttpServletResponse response) {
+        deviceService.deleteByUserIdAndRefreshToken(userId, token);
+        removeJwtFromCookies(response);
     }
 }
