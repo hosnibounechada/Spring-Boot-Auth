@@ -1,9 +1,10 @@
 package com.hb.auth.model.postgres;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Entity(name = "Country")
 @Table(
@@ -11,7 +12,9 @@ import lombok.NoArgsConstructor;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class Country{
         @Id
         @SequenceGenerator(
@@ -29,4 +32,17 @@ public class Country{
         String currency;
         String code;
         String capital;
+
+        @Override
+        public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+                Country country = (Country) o;
+                return getId() != null && Objects.equals(getId(), country.getId());
+        }
+
+        @Override
+        public int hashCode() {
+                return getClass().hashCode();
+        }
 }

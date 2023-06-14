@@ -1,10 +1,10 @@
 package com.hb.auth.model.postgres;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Entity(name = "Post")
 @Table(
@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 )
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 public class Post {
     @Id
@@ -40,10 +42,24 @@ public class Post {
     @JoinColumn(name = "user_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "posts_user_id_fkey"))
+    @ToString.Exclude
     private User user;
 
     public Post(String content, User user) {
         this.content = content;
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Post post = (Post) o;
+        return getId() != null && Objects.equals(getId(), post.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
