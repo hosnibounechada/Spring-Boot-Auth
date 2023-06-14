@@ -54,6 +54,19 @@ spring:
                         enable: true
         protocol: smtps
         username: hosniboun@gmail.com
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: 384622720555-nqp787ic7ic5af8ul0dnduh3f35ll7u5.apps.googleusercontent.com
+                        client-secret: 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
+                    github:
+                        client-id: ccf400f28e8797230985
+                        client-secret: c204932bce24978e924a9f6224be89f8d3247a37
+                    facebook:
+                        client-id: 736419631619561
+                        client-secret: be247a6ef651c8033ab5c96ace0432b7
 minio:
     accessKey: I6qgqsiYOmOtsRUj
     bucket: spring-profile-bucket

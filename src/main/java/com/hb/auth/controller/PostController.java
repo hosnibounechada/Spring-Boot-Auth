@@ -9,18 +9,22 @@ import com.hb.auth.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${apiPrefix}/posts")
 @PostControllerSwagger
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class PostController implements IController<Long, CreatePostRequest, UpdatePostRequest, PostResponse> {
 
     private final PostService postService;
 
     @Override
     @GetAllPostsSwagger
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<PageResponse<PostResponse>> getAll() {
         PageResponse<PostResponse> pageResponse = postService.getAll();

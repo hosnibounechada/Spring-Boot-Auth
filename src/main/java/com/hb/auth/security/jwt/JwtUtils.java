@@ -10,7 +10,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -64,14 +63,13 @@ public class JwtUtils {
 
         Map<String, Object> extraClaims = Map.of(
                 "i", user.getId(),
-                "u", user.getUsername(),
                 "e", user.getEmail(),
                 "r", roles
         );
 
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(user.getId().toString())
+                .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plus(Duration.of(expiresAfter, ChronoUnit.MINUTES))))
                 .signWith(getJwtSecretKey(jwtSecret))
@@ -133,7 +131,7 @@ public class JwtUtils {
         User user = new User();
 
         user.setId( Long.parseLong(claims.get("i").toString()));
-        user.setUsername(claims.get("u").toString());
+        user.setUsername(claims.get("sub").toString());
         user.setEmail(claims.get("e").toString());
 
         user.setAuthorities(((List<String>) claims.get("r"))

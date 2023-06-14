@@ -86,4 +86,9 @@ public class AuthController {
 
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/google")
+    public String google() {
+        return "redirect:/oauth2/authorization/google";
+    }
+
 }
