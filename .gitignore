@@ -3,9 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-### Properties Files ###
 /src/main/resources/application.yml
+/src/main/resources/application-local.yml
+/src/main/resources/application-dev.yml
+/src/main/resources/application-prod.yml
 
 ### STS ###
 .apt_generated
