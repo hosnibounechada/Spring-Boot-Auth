@@ -5,8 +5,7 @@ target/
 !**/src/test/**/target/
 
 ### Properties Files ###
-/src/main/resources/*.yml
-src/main/resources/*.yml
+/src/main/resources/application.yml
 
 ### STS ###
 .apt_generated
